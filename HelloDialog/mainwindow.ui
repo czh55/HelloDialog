@@ -1,0 +1,407 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>798</width>
+    <height>464</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>3DRockMassModelPlatform</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QVTKWidget" name="qvtkWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>1</width>
+          <height>1</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>798</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="openFileAction"/>
+    <addaction name="openPointCloudNormalFileAction"/>
+    <addaction name="loadPolyDataAction"/>
+   </widget>
+   <widget class="QMenu" name="renderPropertyMenu">
+    <property name="title">
+     <string>渲染属性</string>
+    </property>
+    <addaction name="bgColorMenu"/>
+    <addaction name="pointCloudColorMenu"/>
+    <addaction name="removePointCloudAction"/>
+   </widget>
+   <widget class="QMenu" name="pointCloudPreProcessMenu">
+    <property name="title">
+     <string>点云预处理</string>
+    </property>
+    <addaction name="removeNanAction"/>
+    <addaction name="removeRedundantPointsAction"/>
+    <addaction name="translateToCentroidAction"/>
+    <addaction name="regulateCoorAction"/>
+    <addaction name="voxelGridFiltAction"/>
+   </widget>
+   <widget class="QMenu" name="param_set_menu">
+    <property name="title">
+     <string>参数设置</string>
+    </property>
+    <addaction name="plane_detect_set_param_Action"/>
+    <addaction name="three_d_reconstruct_Action"/>
+   </widget>
+   <widget class="QMenu" name="plane_detect_menu">
+    <property name="title">
+     <string>平面提取</string>
+    </property>
+    <widget class="QMenu" name="regulateNormalMenu">
+     <property name="title">
+      <string>校正点云法向量</string>
+     </property>
+     <addaction name="regulateNormalAction"/>
+     <addaction name="performRegulateAction"/>
+    </widget>
+    <widget class="QMenu" name="normalProcessMenu">
+     <property name="title">
+      <string>法向量</string>
+     </property>
+     <addaction name="normalEstimateAction"/>
+     <addaction name="savePointNormalFileAction"/>
+    </widget>
+    <widget class="QMenu" name="psMenu">
+     <property name="title">
+      <string>参数空间</string>
+     </property>
+     <addaction name="createPSAction"/>
+     <addaction name="filtPSAction"/>
+    </widget>
+    <widget class="QMenu" name="segmentMenu">
+     <property name="title">
+      <string>分割</string>
+     </property>
+     <addaction name="segPSAction"/>
+     <addaction name="segPlaneAction"/>
+    </widget>
+    <widget class="QMenu" name="editPolyMenu">
+     <property name="title">
+      <string>多边形编辑</string>
+     </property>
+     <widget class="QMenu" name="delLineSegMenu">
+      <property name="title">
+       <string>线段删除</string>
+      </property>
+      <addaction name="displayLineSegAction"/>
+      <addaction name="switchLineSegAction"/>
+      <addaction name="performLineSegDelAction"/>
+     </widget>
+     <addaction name="editPolyAction"/>
+     <addaction name="delPolyAction"/>
+     <addaction name="performDelAction"/>
+     <addaction name="separator"/>
+     <addaction name="enterPruneModeAction"/>
+     <addaction name="selCurPolyAction"/>
+     <addaction name="setFirstPointAction"/>
+     <addaction name="setSecondPointAction"/>
+     <addaction name="performPolyCutAction"/>
+     <addaction name="delLineSegMenu"/>
+    </widget>
+    <addaction name="load_param_action"/>
+    <addaction name="separator"/>
+    <addaction name="normalProcessMenu"/>
+    <addaction name="regulateNormalMenu"/>
+    <addaction name="psMenu"/>
+    <addaction name="segmentMenu"/>
+    <addaction name="regionGrowingAction"/>
+    <addaction name="mergePlanesAction"/>
+    <addaction name="polyPlanesAction"/>
+    <addaction name="postProcessAction"/>
+    <addaction name="separator"/>
+    <addaction name="runAgainAction"/>
+    <addaction name="separator"/>
+    <addaction name="autoPerformAction"/>
+    <addaction name="separator"/>
+    <addaction name="editPolyMenu"/>
+    <addaction name="separator"/>
+    <addaction name="savePolyDataAction"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="renderPropertyMenu"/>
+   <addaction name="pointCloudPreProcessMenu"/>
+   <addaction name="param_set_menu"/>
+   <addaction name="plane_detect_menu"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action22">
+   <property name="text">
+    <string>22</string>
+   </property>
+  </action>
+  <action name="openFileAction">
+   <property name="text">
+    <string>打开点云文件(&amp;O)</string>
+   </property>
+  </action>
+  <action name="bgColorMenu">
+   <property name="text">
+    <string>背景色</string>
+   </property>
+  </action>
+  <action name="pointCloudColorMenu">
+   <property name="text">
+    <string>点云属性</string>
+   </property>
+  </action>
+  <action name="normalEstimationAction">
+   <property name="text">
+    <string>法向量估计</string>
+   </property>
+  </action>
+  <action name="plane_detect_set_param_Action">
+   <property name="text">
+    <string>平面提取</string>
+   </property>
+  </action>
+  <action name="three_d_reconstruct_Action">
+   <property name="text">
+    <string>三维重建</string>
+   </property>
+  </action>
+  <action name="translateToCentroidAction">
+   <property name="text">
+    <string>平移到重心</string>
+   </property>
+  </action>
+  <action name="removeNanAction">
+   <property name="text">
+    <string>移除NAN点</string>
+   </property>
+  </action>
+  <action name="removeRedundantPointsAction">
+   <property name="text">
+    <string>去除冗余点</string>
+   </property>
+  </action>
+  <action name="load_param_action">
+   <property name="text">
+    <string>加载参数</string>
+   </property>
+  </action>
+  <action name="regulateCoorAction">
+   <property name="text">
+    <string>修正坐标</string>
+   </property>
+  </action>
+  <action name="normalEstimateAction">
+   <property name="text">
+    <string>估计法向量</string>
+   </property>
+  </action>
+  <action name="regulateNormalAction">
+   <property name="text">
+    <string>选择指示点</string>
+   </property>
+  </action>
+  <action name="performRegulateAction">
+   <property name="text">
+    <string>执行校正</string>
+   </property>
+  </action>
+  <action name="removePointCloudAction">
+   <property name="text">
+    <string>移除点云</string>
+   </property>
+  </action>
+  <action name="createPSAction">
+   <property name="text">
+    <string>创建参数空间</string>
+   </property>
+  </action>
+  <action name="savePointNormalFileAction">
+   <property name="text">
+    <string>保存法向量点云文件</string>
+   </property>
+  </action>
+  <action name="openPointCloudNormalFileAction">
+   <property name="text">
+    <string>打开点云法向量文件</string>
+   </property>
+  </action>
+  <action name="filtPSAction">
+   <property name="text">
+    <string>平滑参数空间</string>
+   </property>
+  </action>
+  <action name="segPSAction">
+   <property name="text">
+    <string>参数空间</string>
+   </property>
+  </action>
+  <action name="segPlaneAction">
+   <property name="text">
+    <string>平面</string>
+   </property>
+  </action>
+  <action name="regionGrowingAction">
+   <property name="text">
+    <string>区域生长</string>
+   </property>
+  </action>
+  <action name="mergePlanesAction">
+   <property name="text">
+    <string>平面合并</string>
+   </property>
+  </action>
+  <action name="polyPlanesAction">
+   <property name="text">
+    <string>平面多边形化</string>
+   </property>
+  </action>
+  <action name="postProcessAction">
+   <property name="text">
+    <string>点云后处理</string>
+   </property>
+  </action>
+  <action name="runAgainAction">
+   <property name="text">
+    <string>继续运行</string>
+   </property>
+  </action>
+  <action name="autoPerformAction">
+   <property name="text">
+    <string>自动执行</string>
+   </property>
+  </action>
+  <action name="editPolyAction">
+   <property name="text">
+    <string>进入多边形删除模式</string>
+   </property>
+  </action>
+  <action name="delPolyAction">
+   <property name="text">
+    <string>确定删除</string>
+   </property>
+  </action>
+  <action name="performDelAction">
+   <property name="text">
+    <string>执行删除操作</string>
+   </property>
+  </action>
+  <action name="savePolyDataAction">
+   <property name="text">
+    <string>保存多边形数据</string>
+   </property>
+  </action>
+  <action name="enterPruneModeAction">
+   <property name="text">
+    <string>进入多边形修剪模式</string>
+   </property>
+  </action>
+  <action name="selCurPolyAction">
+   <property name="text">
+    <string>选中当前多边形</string>
+   </property>
+  </action>
+  <action name="setFirstPointAction">
+   <property name="text">
+    <string>设置选中点为第一个顶点</string>
+   </property>
+  </action>
+  <action name="setSecondPointAction">
+   <property name="text">
+    <string>设置选中点为第二个顶点</string>
+   </property>
+  </action>
+  <action name="performPolyCutAction">
+   <property name="text">
+    <string>执行多边形切分操作</string>
+   </property>
+  </action>
+  <action name="displayLineSegAction">
+   <property name="text">
+    <string>查看所选线段</string>
+   </property>
+  </action>
+  <action name="switchLineSegAction">
+   <property name="text">
+    <string>线段切换</string>
+   </property>
+  </action>
+  <action name="performLineSegDelAction">
+   <property name="text">
+    <string>执行删除</string>
+   </property>
+  </action>
+  <action name="loadPolyDataAction">
+   <property name="text">
+    <string>加载多边形数据</string>
+   </property>
+  </action>
+  <action name="voxelGridFiltAction">
+   <property name="text">
+    <string>体素滤波</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKWidget</class>
+   <extends>QWidget</extends>
+   <header>QVTKWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
