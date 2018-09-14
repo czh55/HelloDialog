@@ -1,5 +1,5 @@
 /********************************************************************************
-** Form generated from reading UI file 'removepointclouddialog.ui'
+** Form generated from reading UI file 'RemovePointCloudDialog.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.9.6
 **
@@ -20,14 +20,15 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_RemovePointCloudDialog
 {
 public:
+    QWidget *formLayoutWidget;
     QFormLayout *formLayout;
-    QFormLayout *formLayout_2;
     QHBoxLayout *horizontalLayout;
     QLabel *label;
     QLineEdit *lineEdit;
@@ -37,35 +38,33 @@ public:
     {
         if (RemovePointCloudDialog->objectName().isEmpty())
             RemovePointCloudDialog->setObjectName(QStringLiteral("RemovePointCloudDialog"));
-        RemovePointCloudDialog->resize(242, 78);
-        formLayout = new QFormLayout(RemovePointCloudDialog);
+        RemovePointCloudDialog->resize(400, 300);
+        formLayoutWidget = new QWidget(RemovePointCloudDialog);
+        formLayoutWidget->setObjectName(QStringLiteral("formLayoutWidget"));
+        formLayoutWidget->setGeometry(QRect(80, 110, 221, 61));
+        formLayout = new QFormLayout(formLayoutWidget);
         formLayout->setObjectName(QStringLiteral("formLayout"));
-        formLayout_2 = new QFormLayout();
-        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        formLayout->setContentsMargins(0, 0, 0, 0);
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        label = new QLabel(RemovePointCloudDialog);
+        label = new QLabel(formLayoutWidget);
         label->setObjectName(QStringLiteral("label"));
 
         horizontalLayout->addWidget(label);
 
-        lineEdit = new QLineEdit(RemovePointCloudDialog);
+        lineEdit = new QLineEdit(formLayoutWidget);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
 
         horizontalLayout->addWidget(lineEdit);
 
 
-        formLayout_2->setLayout(0, QFormLayout::LabelRole, horizontalLayout);
+        formLayout->setLayout(0, QFormLayout::LabelRole, horizontalLayout);
 
-        buttonBox = new QDialogButtonBox(RemovePointCloudDialog);
+        buttonBox = new QDialogButtonBox(formLayoutWidget);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
-        buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
-        formLayout_2->setWidget(1, QFormLayout::LabelRole, buttonBox);
-
-
-        formLayout->setLayout(0, QFormLayout::LabelRole, formLayout_2);
+        formLayout->setWidget(1, QFormLayout::LabelRole, buttonBox);
 
 
         retranslateUi(RemovePointCloudDialog);

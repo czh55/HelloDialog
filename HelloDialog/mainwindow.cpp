@@ -1,21 +1,21 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
 #include <QFileDialog>
 #include <pcl/common/transforms.h>
-#include "setbgcolordialog.h"
-#include "setpointcloudprodialog.h"
+#include "SetBGColorDialog.h"
+#include "SetPointCloudProDialog.h"
 #include <QLayout>
 #include <pcl/filters/filter.h>
-#include "plane_detect.h"
-#include "planedetectsetparamdialog.h"
+#include "PlaneDetect.h"
+#include "PlaneDetectSetParamDialog.h"
 #include <QSettings>
 #include <QMessageBox>
-#include "removepointclouddialog.h"
+#include "RemovePointCloudDialog.h"
 #include <omp.h>
 
-mainWindow::mainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::mainWindow)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -26,7 +26,7 @@ mainWindow::mainWindow(QWidget *parent) :
     ui->qvtkWidget->update();
 
     viewer_cloud.addCoordinateSystem(1.0f);
-    viewer_cloud.setBackgroundColor(128, 128, 128);
+    viewer_cloud.setBackgroundColor(0, 0, 0);
     ui->qvtkWidget->update();
 
     viewer_cloud.registerPointPickingCallback(pointPickingEventOccurred, (void*)&source_cloud);
@@ -35,15 +35,15 @@ mainWindow::mainWindow(QWidget *parent) :
     viewer_ps.addCoordinateSystem(1.0f);
     viewer_ps.registerKeyboardCallback(keyboardEventOccurred_ps, (void*)&viewer_ps);
 
-    regulateNormalDialog.setVisible(false);
+    RegulateNormalDialog.setVisible(false);
 }
 
-mainWindow::~mainWindow()
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 // 打开文件
-void mainWindow::on_openFileAction_triggered()
+void MainWindow::on_openFileAction_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ",  tr("pcdFiles(*.pcd)"));
     if(fileName == "") return;
@@ -54,7 +54,7 @@ void mainWindow::on_openFileAction_triggered()
     ui->qvtkWidget->update ();
 }
 // 改变背景颜色
-void mainWindow::on_bgColorMenu_triggered()
+void MainWindow::on_bgColorMenu_triggered()
 {
     SetBGColorDialog dlg;
 
@@ -68,7 +68,7 @@ void mainWindow::on_bgColorMenu_triggered()
     ui->qvtkWidget->update ();
 }
 // 改变点云颜色
-void mainWindow::on_pointCloudColorMenu_triggered()
+void MainWindow::on_pointCloudColorMenu_triggered()
 {
     SetPointCloudProDialog *dlg = new SetPointCloudProDialog();
     if(dlg->exec() != QDialog::Accepted) return;
@@ -82,7 +82,7 @@ void mainWindow::on_pointCloudColorMenu_triggered()
     viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, size, q_cloud_id.toStdString());
 }
 // 把点云移动至重心
-void mainWindow::on_translateToCentroidAction_triggered()
+void MainWindow::on_translateToCentroidAction_triggered()
 {
     if(source_cloud->size()==0) return;
     pcl::PointXYZ p;
@@ -108,7 +108,7 @@ void mainWindow::on_translateToCentroidAction_triggered()
     cout << "done." << endl;
 }
 // 移除NaN点
-void mainWindow::on_removeNanAction_triggered()
+void MainWindow::on_removeNanAction_triggered()
 {
     std::vector<int> indices;
     pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -118,13 +118,13 @@ void mainWindow::on_removeNanAction_triggered()
     cout << "After nan points been removed, points size =" << source_cloud->size() << endl;
 }
 // 设置平面提取参数
-void mainWindow::on_plane_detect_set_param_Action_triggered()
+void MainWindow::on_plane_detect_set_param_Action_triggered()
 {
     PlaneDetectSetParamDialog dlg;
     dlg.exec();
 }
 // 移除冗余点
-void mainWindow::on_removeRedundantPointsAction_triggered()
+void MainWindow::on_removeRedundantPointsAction_triggered()
 {
     std::vector<bool> is_redundant(source_cloud->size(), false);
     kdtree_source.setInputCloud(source_cloud);
@@ -152,7 +152,7 @@ void mainWindow::on_removeRedundantPointsAction_triggered()
 // 修正坐标
 // 默认y轴朝上；x轴水平；z轴指向岩体方向
 // 简单处理：swap y与z的值，z值再乘以-1
-void mainWindow::on_regulateCoorAction_triggered()
+void MainWindow::on_regulateCoorAction_triggered()
 {
     float tmp;
     for(int i = 0; i < source_cloud->size(); ++i)
@@ -166,65 +166,65 @@ void mainWindow::on_regulateCoorAction_triggered()
 }
 
 // 为平面提取加载参数
-void mainWindow::on_load_param_action_triggered()
+void MainWindow::on_load_param_action_triggered()
 {
     QSettings configIni("config.txt", QSettings::IniFormat);
 
-    isConductTranslate = configIni.value("plane_detect/isConductTranslate").toBool();
-    min_dist_between_points = configIni.value("plane_detect/min_dist_between_points").toFloat();
-    r_for_estimate_normal = configIni.value("plane_detect/r_for_estimate_normal").toFloat();
-    interval_level = configIni.value("plane_detect/interval_level").toInt();
-    normal_length_for_display = configIni.value("plane_detect/normal_length_for_display").toFloat();
-    normal_length_for_selected = configIni.value("plane_detect/normal_length_for_selected").toFloat();
-    is_norm_direction_valid = configIni.value("plane_detect/is_norm_direction_valid").toBool();
-    r_for_regulate_normal = configIni.value("plane_detect/r_for_regulate_normal").toFloat();
-    num_res = configIni.value("plane_detect/num_res").toFloat();
-    color_gain = configIni.value("plane_detect/color_gain").toFloat();
-    std_dev_gaussian = configIni.value("plane_detect/std_dev_gaussian").toFloat();
-    search_radius_create_gradient = configIni.value("plane_detect/search_radius_create_gradient").toFloat();
-    T_vote_num = configIni.value("plane_detect/T_vote_num").toInt();
-    radius_base = configIni.value("plane_detect/radius_base").toFloat();
-    delta_radius = configIni.value("plane_detect/delta_radius").toFloat();
-    S_threshold = configIni.value("plane_detect/S_threshold").toFloat();
-    dev_threshold = configIni.value("plane_detect/dev_threshold").toFloat();
-    search_radius_for_plane_seg = configIni.value("plane_detect/search_radius_for_plane_seg").toFloat();
-    T_num_of_single_plane = configIni.value("plane_detect/T_num_of_single_plane").toInt();
-    radius_border = configIni.value("plane_detect/radius_border").toFloat();
-    radius_local = configIni.value("plane_detect/radius_local").toFloat();
-    T_angle_bias_integrate = configIni.value("plane_detect/T_angle_bias_integrate").toFloat();
-    r_local = configIni.value("plane_detect/r_local").toFloat();
-    T_curvature_bias = configIni.value("plane_detect/T_curvature_bias").toFloat();
-    T_point_normal_bias = configIni.value("plane_detect/T_point_normal_bias").toFloat();
-    T_ratio_merge_planes = configIni.value("plane_detect/T_ratio_merge_planes").toFloat();
-    alpha_poly = configIni.value("plane_detect/alpha_poly").toFloat();
-    T_dist_point_plane = configIni.value("plane_detect/T_dist_point_plane").toFloat();
-    T_cluster_num = configIni.value("plane_detect/T_cluster_num").toInt();
+    isConductTranslate = configIni.value("PlaneDetect/isConductTranslate").toBool();
+    min_dist_between_points = configIni.value("PlaneDetect/min_dist_between_points").toFloat();
+    r_for_estimate_normal = configIni.value("PlaneDetect/r_for_estimate_normal").toFloat();
+    interval_level = configIni.value("PlaneDetect/interval_level").toInt();
+    normal_length_for_display = configIni.value("PlaneDetect/normal_length_for_display").toFloat();
+    normal_length_for_selected = configIni.value("PlaneDetect/normal_length_for_selected").toFloat();
+    is_norm_direction_valid = configIni.value("PlaneDetect/is_norm_direction_valid").toBool();
+    r_for_regulate_normal = configIni.value("PlaneDetect/r_for_regulate_normal").toFloat();
+    num_res = configIni.value("PlaneDetect/num_res").toFloat();
+    color_gain = configIni.value("PlaneDetect/color_gain").toFloat();
+    std_dev_gaussian = configIni.value("PlaneDetect/std_dev_gaussian").toFloat();
+    search_radius_create_gradient = configIni.value("PlaneDetect/search_radius_create_gradient").toFloat();
+    T_vote_num = configIni.value("PlaneDetect/T_vote_num").toInt();
+    radius_base = configIni.value("PlaneDetect/radius_base").toFloat();
+    delta_radius = configIni.value("PlaneDetect/delta_radius").toFloat();
+    S_threshold = configIni.value("PlaneDetect/S_threshold").toFloat();
+    dev_threshold = configIni.value("PlaneDetect/dev_threshold").toFloat();
+    search_radius_for_plane_seg = configIni.value("PlaneDetect/search_radius_for_plane_seg").toFloat();
+    T_num_of_single_plane = configIni.value("PlaneDetect/T_num_of_single_plane").toInt();
+    radius_border = configIni.value("PlaneDetect/radius_border").toFloat();
+    radius_local = configIni.value("PlaneDetect/radius_local").toFloat();
+    T_angle_bias_integrate = configIni.value("PlaneDetect/T_angle_bias_integrate").toFloat();
+    r_local = configIni.value("PlaneDetect/r_local").toFloat();
+    T_curvature_bias = configIni.value("PlaneDetect/T_curvature_bias").toFloat();
+    T_point_normal_bias = configIni.value("PlaneDetect/T_point_normal_bias").toFloat();
+    T_ratio_merge_planes = configIni.value("PlaneDetect/T_ratio_merge_planes").toFloat();
+    alpha_poly = configIni.value("PlaneDetect/alpha_poly").toFloat();
+    T_dist_point_plane = configIni.value("PlaneDetect/T_dist_point_plane").toFloat();
+    T_cluster_num = configIni.value("PlaneDetect/T_cluster_num").toInt();
     cout << "参数加载完成" << endl;
 
     kdtree_source.setInputCloud(source_cloud);
 }
 // 估计法向量
-void mainWindow::on_normalEstimateAction_triggered()
+void MainWindow::on_normalEstimateAction_triggered()
 {
     estimateNormal();
     memset(state, 0, CMD_SIZE);
     strcpy(state, "estimate normal");
 }
 // 校正点云法向量
-void mainWindow::on_regulateNormalAction_triggered()
+void MainWindow::on_regulateNormalAction_triggered()
 {
     memset(state, 0, CMD_SIZE);
     strcpy(state, "regulate normal");
-    regulateNormalDialog.show();
+    RegulateNormalDialog.show();
 }
 // 执行法向量校正操作
-void mainWindow::on_performRegulateAction_triggered()
+void MainWindow::on_performRegulateAction_triggered()
 {
-    is_norm_direction_valid = regulateNormalDialog.is_norm_direction_valid;
+    is_norm_direction_valid = RegulateNormalDialog.is_norm_direction_valid;
     regulateNormal();
 }
 // 移除点云
-void mainWindow::on_removePointCloudAction_triggered()
+void MainWindow::on_removePointCloudAction_triggered()
 {
    RemovePointCloudDialog dlg;
    if(dlg.exec() == QDialog::Accepted)
@@ -233,7 +233,7 @@ void mainWindow::on_removePointCloudAction_triggered()
    }
 }
 // 创建参数空间
-void mainWindow::on_createPSAction_triggered()
+void MainWindow::on_createPSAction_triggered()
 {
     start = std::clock();
     createPS();
@@ -247,7 +247,7 @@ void mainWindow::on_createPSAction_triggered()
     processStateMsg();
 }
 // 保存法向量点云文件
-void mainWindow::on_savePointNormalFileAction_triggered()
+void MainWindow::on_savePointNormalFileAction_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
             tr("Open PCD Files"),
@@ -273,7 +273,7 @@ void mainWindow::on_savePointNormalFileAction_triggered()
     }
 }
 // 打开带有法向量的点云文件
-void mainWindow::on_openPointCloudNormalFileAction_triggered()
+void MainWindow::on_openPointCloudNormalFileAction_triggered()
 {
     on_load_param_action_triggered();
     QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ",  tr("pcdFiles(*.pcd)"));
@@ -283,7 +283,7 @@ void mainWindow::on_openPointCloudNormalFileAction_triggered()
     cout << "loaded " << source_cloud->size() << " points." << endl;
 }
 // 平滑参数空间
-void mainWindow::on_filtPSAction_triggered()
+void MainWindow::on_filtPSAction_triggered()
 {
     start = std::clock();
     filtPS();
@@ -294,7 +294,7 @@ void mainWindow::on_filtPSAction_triggered()
     processStateMsg();
 }
 // 分割参数空间
-void mainWindow::on_segPSAction_triggered()
+void MainWindow::on_segPSAction_triggered()
 {
     start = std::clock();
     createGradientField();
@@ -306,7 +306,7 @@ void mainWindow::on_segPSAction_triggered()
     processStateMsg();
 }
 // 分割平面
-void mainWindow::on_segPlaneAction_triggered()
+void MainWindow::on_segPlaneAction_triggered()
 {
     start = std::clock();
     segmentPlanes();
@@ -329,7 +329,7 @@ void mainWindow::on_segPlaneAction_triggered()
     processStateMsg();
 }
 // 区域生长
-void mainWindow::on_regionGrowingAction_triggered()
+void MainWindow::on_regionGrowingAction_triggered()
 {
     start = std::clock();
     growPlaneArea();
@@ -340,7 +340,7 @@ void mainWindow::on_regionGrowingAction_triggered()
     processStateMsg();
 }
 // 平面合并
-void mainWindow::on_mergePlanesAction_triggered()
+void MainWindow::on_mergePlanesAction_triggered()
 {
     start = std::clock();
     mergePlanes();
@@ -351,7 +351,7 @@ void mainWindow::on_mergePlanesAction_triggered()
     processStateMsg();
 }
 // 平面多边形化
-void mainWindow::on_polyPlanesAction_triggered()
+void MainWindow::on_polyPlanesAction_triggered()
 {
     start = std::clock();
     polyPlanes();
@@ -362,7 +362,7 @@ void mainWindow::on_polyPlanesAction_triggered()
     processStateMsg();
 }
 // 点云后处理
-void mainWindow::on_postProcessAction_triggered()
+void MainWindow::on_postProcessAction_triggered()
 {
     start = std::clock();
     postProcessPlanes();
@@ -373,7 +373,7 @@ void mainWindow::on_postProcessAction_triggered()
     processStateMsg();
 }
 // 继续运行
-void mainWindow::on_runAgainAction_triggered()
+void MainWindow::on_runAgainAction_triggered()
 {
     // 读参数
     on_load_param_action_triggered();
@@ -433,7 +433,7 @@ void mainWindow::on_runAgainAction_triggered()
     processStateMsg();
 }
 // 自动执行
-void mainWindow::on_autoPerformAction_triggered()
+void MainWindow::on_autoPerformAction_triggered()
 {
     // 霍夫变换
     // 创建参数空间
@@ -486,7 +486,7 @@ void mainWindow::on_autoPerformAction_triggered()
 }
 // 删除指定的多边形
 // 处理对象：plane_clouds_final, g_selected_point, poly_centroids_cloud g_is_poly_del kdtree_poly_centroids_cloud
-void mainWindow::on_editPolyAction_triggered()
+void MainWindow::on_editPolyAction_triggered()
 {
     // step0: 提示用户
     cout << "进入多边形删除模式" << endl;
@@ -537,7 +537,7 @@ void mainWindow::on_editPolyAction_triggered()
 }
 // 确定删除多边形
 // g_selected_poly_id
-void mainWindow::on_delPolyAction_triggered()
+void MainWindow::on_delPolyAction_triggered()
 {
     g_is_poly_del[g_selected_poly_id] = true;
     cout << "被删除的多边形id = " << g_selected_poly_id << endl;
@@ -554,7 +554,7 @@ void mainWindow::on_delPolyAction_triggered()
     }
 }
 // 执行删除操作
-void mainWindow::on_performDelAction_triggered()
+void MainWindow::on_performDelAction_triggered()
 {
     std::vector<int> offset(plane_clouds_final.size(), 0);
     int count = 0;
@@ -587,7 +587,7 @@ void mainWindow::on_performDelAction_triggered()
     on_editPolyAction_triggered();
 }
 // 保存多边形数据
-void mainWindow::on_savePolyDataAction_triggered()
+void MainWindow::on_savePolyDataAction_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
             tr("Open PCD Files"),
@@ -631,7 +631,7 @@ void mainWindow::on_savePolyDataAction_triggered()
     }
 }
 // 进入多边形修剪模式
-void mainWindow::on_enterPruneModeAction_triggered()
+void MainWindow::on_enterPruneModeAction_triggered()
 {
     // step0: 提示用户
     cout << "进入多边形修剪模式" << endl;
@@ -684,7 +684,7 @@ void mainWindow::on_enterPruneModeAction_triggered()
 }
 // 选中当前多边形
 // 仅显示当前多边形
-void mainWindow::on_selCurPolyAction_triggered()
+void MainWindow::on_selCurPolyAction_triggered()
 {
     viewer_cloud.removeAllPointClouds();
     viewer_cloud.removeAllShapes();
@@ -697,7 +697,7 @@ void mainWindow::on_selCurPolyAction_triggered()
 }
 // 设置选中点为第一个顶点
 // 选中的点为绿色
-void mainWindow::on_setFirstPointAction_triggered()
+void MainWindow::on_setFirstPointAction_triggered()
 {
     first_point = g_selected_point;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -710,7 +710,7 @@ void mainWindow::on_setFirstPointAction_triggered()
     cout << "第一个点已选中" << endl;
 }
 // 设置选中点为第二个顶点
-void mainWindow::on_setSecondPointAction_triggered()
+void MainWindow::on_setSecondPointAction_triggered()
 {
     second_point = g_selected_point;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -724,7 +724,7 @@ void mainWindow::on_setSecondPointAction_triggered()
 }
 // 执行多边形切分操作
 // 即，将一个多边形通过选择的两点构成的直线段把原多边形切分成两个多边形
-void mainWindow::on_performPolyCutAction_triggered()
+void MainWindow::on_performPolyCutAction_triggered()
 {
     // step0: 分别找到第一个点和第二个点在原来多边形中的索引
     int first_index = -1;
@@ -785,7 +785,7 @@ void mainWindow::on_performPolyCutAction_triggered()
     on_enterPruneModeAction_triggered();
 }
 // 显示要删除的线段
-void mainWindow::on_displayLineSegAction_triggered()
+void MainWindow::on_displayLineSegAction_triggered()
 {
     // step0: 分别找到第一个点和第二个点在原来多边形中的索引
     int first_index = -1;
@@ -823,7 +823,7 @@ void mainWindow::on_displayLineSegAction_triggered()
     viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "line seg");
 }
 // 切换线段
-void mainWindow::on_switchLineSegAction_triggered()
+void MainWindow::on_switchLineSegAction_triggered()
 {
     pcl::PointXYZ tmp_point = first_point;
     first_point = second_point;
@@ -831,7 +831,7 @@ void mainWindow::on_switchLineSegAction_triggered()
     on_displayLineSegAction_triggered();
 }
 // 执行删除
-void mainWindow::on_performLineSegDelAction_triggered()
+void MainWindow::on_performLineSegDelAction_triggered()
 {
     // step0: 分别找到第一个点和第二个点在原来多边形中的索引
     int first_index = -1;
@@ -871,12 +871,12 @@ void mainWindow::on_performLineSegDelAction_triggered()
     on_selCurPolyAction_triggered();
 }
 // 加载多边形数据
-void mainWindow::on_loadPolyDataAction_triggered()
+void MainWindow::on_loadPolyDataAction_triggered()
 {
 
 }
 // 进行体素滤波
-void mainWindow::on_voxelGridFiltAction_triggered()
+void MainWindow::on_voxelGridFiltAction_triggered()
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::VoxelGrid<pcl::PointXYZ> sor;

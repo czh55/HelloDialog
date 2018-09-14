@@ -1,5 +1,5 @@
 /********************************************************************************
-** Form generated from reading UI file 'planedetectsetparamdialog.ui'
+** Form generated from reading UI file 'PlaneDetectSetParamDialog.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.9.6
 **
@@ -15,17 +15,17 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
-#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_PlaneDetectSetParamDialog
 {
 public:
-    QFormLayout *formLayout;
+    QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
     QTableView *tableView;
     QDialogButtonBox *buttonBox;
@@ -34,35 +34,22 @@ public:
     {
         if (PlaneDetectSetParamDialog->objectName().isEmpty())
             PlaneDetectSetParamDialog->setObjectName(QStringLiteral("PlaneDetectSetParamDialog"));
-        PlaneDetectSetParamDialog->resize(723, 549);
-        formLayout = new QFormLayout(PlaneDetectSetParamDialog);
-        formLayout->setObjectName(QStringLiteral("formLayout"));
-        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-        verticalLayout = new QVBoxLayout();
+        PlaneDetectSetParamDialog->resize(649, 431);
+        verticalLayoutWidget = new QWidget(PlaneDetectSetParamDialog);
+        verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
+        verticalLayoutWidget->setGeometry(QRect(0, 0, 651, 391));
+        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        tableView = new QTableView(PlaneDetectSetParamDialog);
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        tableView = new QTableView(verticalLayoutWidget);
         tableView->setObjectName(QStringLiteral("tableView"));
-        tableView->setMinimumSize(QSize(0, 500));
 
         verticalLayout->addWidget(tableView);
 
-
-        formLayout->setLayout(0, QFormLayout::SpanningRole, verticalLayout);
-
         buttonBox = new QDialogButtonBox(PlaneDetectSetParamDialog);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(buttonBox->sizePolicy().hasHeightForWidth());
-        buttonBox->setSizePolicy(sizePolicy);
-        buttonBox->setLayoutDirection(Qt::LeftToRight);
-        buttonBox->setAutoFillBackground(false);
-        buttonBox->setOrientation(Qt::Horizontal);
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Save);
-
-        formLayout->setWidget(1, QFormLayout::LabelRole, buttonBox);
-
+        buttonBox->setGeometry(QRect(10, 400, 156, 23));
+        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
         retranslateUi(PlaneDetectSetParamDialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), PlaneDetectSetParamDialog, SLOT(accept()));
@@ -73,7 +60,7 @@ public:
 
     void retranslateUi(QDialog *PlaneDetectSetParamDialog)
     {
-        PlaneDetectSetParamDialog->setWindowTitle(QApplication::translate("PlaneDetectSetParamDialog", "\345\271\263\351\235\242\346\217\220\345\217\226\345\217\202\346\225\260\350\256\276\347\275\256", Q_NULLPTR));
+        PlaneDetectSetParamDialog->setWindowTitle(QApplication::translate("PlaneDetectSetParamDialog", "Dialog", Q_NULLPTR));
     } // retranslateUi
 
 };

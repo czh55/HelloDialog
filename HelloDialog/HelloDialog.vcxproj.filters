@@ -33,85 +33,76 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hellodialog.cpp">
+    <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
+    <ClCompile Include="PlaneDetectSetParamDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="regulatenormaldialog.cpp">
+    <ClCompile Include="RegulateNormalDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="setbgcolordialog.cpp">
+    <ClCompile Include="RemovePointCloudDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="setpointcloudprodialog.cpp">
+    <ClCompile Include="SetBGColorDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="removepointclouddialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="planedetectsetparamdialog.cpp">
+    <ClCompile Include="SetPointCloudProDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="hellodialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="mainwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="regulatenormaldialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="setbgcolordialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="setpointcloudprodialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="removepointclouddialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="planedetectsetparamdialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
-    <QtUic Include="hellodialog.ui">
+    <QtUic Include="MainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="mainwindow.ui">
+    <QtUic Include="PlaneDetectSetParamDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="regulatenormaldialog.ui">
+    <QtUic Include="RegulateNormalDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="setbgcolordialog.ui">
+    <QtUic Include="RemovePointCloudDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="setpointcloudprodialog.ui">
+    <QtUic Include="SetBGColorDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="removepointclouddialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="planedetectsetparamdialog.ui">
+    <QtUic Include="SetPointCloudProDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="hellodialog.qrc">
+    <ClInclude Include="HeaderFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaneDetect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MainWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PlaneDetectSetParamDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RegulateNormalDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RemovePointCloudDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SetBGColorDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SetPointCloudProDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="MainWindow.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="plane_detect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="headerFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

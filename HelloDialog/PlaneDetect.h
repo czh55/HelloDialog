@@ -1,5 +1,5 @@
 #pragma once;
-#include "headerFile.h"
+#include "HeaderFile.h"
 #include <QString>
 #include <pcl/features/normal_3d_omp.h>
 

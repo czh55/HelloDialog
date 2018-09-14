@@ -26,21 +26,21 @@ namespace QT_NAMESPACE {
 }
 #endif
 
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_hellodialog)();
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_hellodialog)()
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_MainWindow)();
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_MainWindow)()
 {
     return 1;
 }
 
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_hellodialog)();
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_hellodialog)()
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MainWindow)();
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MainWindow)()
 {
     return 1;
 }
 
 namespace {
    struct initializer {
-       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_hellodialog)(); }
-       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_hellodialog)(); }
+       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_MainWindow)(); }
+       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_MainWindow)(); }
    } dummy;
 }

@@ -2,7 +2,7 @@
 #define REGULATENORMALDIALOG_H
 
 #include <QDialog>
-//#include "plane_detect.h"
+//#include "PlaneDetect.h"
 
 namespace Ui {
 class RegulateNormalDialog;

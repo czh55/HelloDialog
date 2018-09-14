@@ -1,5 +1,5 @@
-﻿#include "planedetectsetparamdialog.h"
-#include "ui_planedetectsetparamdialog.h"
+﻿#include "PlaneDetectSetParamDialog.h"
+#include "ui_PlaneDetectSetParamDialog.h"
 #include <QMessageBox>
 #include <QStringList>
 #include <iostream>
@@ -73,7 +73,7 @@ void PlaneDetectSetParamDialog::setTableItem(int row, QString str1, QString str2
 {
     model->setItem(row,0, new QStandardItem(str1));
     model->setItem(row,1, new QStandardItem(str2));
-    QString str3 = "plane_detect/";
+    QString str3 = "PlaneDetect/";
     str3.append(str1);
     model->setItem(row,2, new QStandardItem(configIniRead->value(str3).toString()));
 }
@@ -116,7 +116,7 @@ void PlaneDetectSetParamDialog::on_buttonBox_accepted()
         QString key, value;
         key = model->data(model->index(i, 0), Qt::DisplayRole).toString();
         value = model->data(model->index(i, 2), Qt::DisplayRole).toString();
-        key = "plane_detect/" + key;
+        key = "PlaneDetect/" + key;
         configIniRead->setValue(key, value);
     }
 

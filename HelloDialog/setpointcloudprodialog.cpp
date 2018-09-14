@@ -1,5 +1,5 @@
-#include "setpointcloudprodialog.h"
-#include "ui_setpointcloudprodialog.h"
+#include "SetPointCloudProDialog.h"
+#include "ui_SetPointCloudProDialog.h"
 
 SetPointCloudProDialog::SetPointCloudProDialog(QWidget *parent) :
     QDialog(parent),

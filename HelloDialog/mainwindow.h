@@ -1,8 +1,8 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <iostream>
-#include "regulatenormaldialog.h"
+#include "RegulateNormalDialog.h"
 
 // Qt
 #include <QMainWindow>
@@ -19,23 +19,23 @@
 #include <vtkRenderWindow.h>
 
 namespace Ui {
-class mainWindow;
+class MainWindow;
 }
 
-class mainWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 protected:
-    // 类成员变�??
+    // 绫绘垚鍛樺彉閲??
     //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     //boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 
     // std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr>> main_clouds;
-    RegulateNormalDialog regulateNormalDialog;
+    RegulateNormalDialog RegulateNormalDialog;
 public:
-    explicit mainWindow(QWidget *parent = 0);
-    ~mainWindow();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
 private slots:
     void on_openFileAction_triggered();
@@ -117,7 +117,7 @@ private slots:
     void on_voxelGridFiltAction_triggered();
 
 private:
-    Ui::mainWindow *ui;
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

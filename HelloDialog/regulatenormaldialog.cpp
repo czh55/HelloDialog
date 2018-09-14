@@ -1,5 +1,5 @@
-#include "regulatenormaldialog.h"
-#include "ui_regulatenormaldialog.h"
+#include "RegulateNormalDialog.h"
+#include "ui_RegulateNormalDialog.h"
 
 RegulateNormalDialog::RegulateNormalDialog(QWidget *parent) :
     QDialog(parent),
