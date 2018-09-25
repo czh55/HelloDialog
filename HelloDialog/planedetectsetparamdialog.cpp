@@ -22,9 +22,9 @@ PlaneDetectSetParamDialog::~PlaneDetectSetParamDialog()
 
 void PlaneDetectSetParamDialog::initTable()
 {
-    ui->tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
+    //ui->tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    //ui->tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    //ui->tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
     // 设置表格每列的宽度
     ui->tableView->setColumnWidth(0, 100);
     ui->tableView->setColumnWidth(1, 600);
