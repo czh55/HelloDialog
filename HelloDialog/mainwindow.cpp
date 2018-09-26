@@ -42,6 +42,136 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+//void Tools::transformation(const PointCloudT &souce_cloud, PointCloudT &icp_cloud, Eigen::Matrix4d transformation_matrix) {
+void MainWindow::transformation(Eigen::Matrix4d transformation_matrix) {
+
+	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
+	double theta = M_PI / 8;  // The angle of rotation in radians
+	transformation_matrix(0, 0) = cos(theta);
+	transformation_matrix(0, 1) = -sin(theta);
+	transformation_matrix(1, 0) = sin(theta);
+	transformation_matrix(1, 1) = cos(theta);
+
+	// A translation on Z axis (0.4 meters)
+	transformation_matrix(2, 3) = 0.4;
+
+	// Display in terminal the transformation matrix
+	std::cout << "Applying this rigid transformation to: cloud_in -> cloud_icp" << std::endl;
+	print4x4Matrix(transformation_matrix);
+
+	// Executing the transformation
+	pcl::transformPointCloud(*source_cloud2_registration, *cloud_icp, transformation_matrix);
+
+}
+
+void MainWindow::print4x4Matrix(const Eigen::Matrix4d & matrix)
+{
+	printf("Rotation matrix :\n");
+	printf("    | %6.3f %6.3f %6.3f | \n", matrix(0, 0), matrix(0, 1), matrix(0, 2));
+	printf("R = | %6.3f %6.3f %6.3f | \n", matrix(1, 0), matrix(1, 1), matrix(1, 2));
+	printf("    | %6.3f %6.3f %6.3f | \n", matrix(2, 0), matrix(2, 1), matrix(2, 2));
+	printf("Translation vector :\n");
+	printf("t = < %6.3f, %6.3f, %6.3f >\n\n", matrix(0, 3), matrix(1, 3), matrix(2, 3));
+}
+
+//void Tools::visualization(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr source_cloud2_registration, PointCloudT::Ptr cloud_tr, PointCloudT::Ptr cloud_icp, int iterations)
+void MainWindow::visualization()
+{
+	// Visualization
+	pcl::visualization::PCLVisualizer viewer("ICP demo");
+	// Create two vertically separated viewports
+	int v1(0);
+	int v2(1);
+	viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+	viewer.createViewPort(0.5, 0.0, 1.0, 1.0, v2);
+
+	// The color we will be using
+	float bckgr_gray_level = 0.0;  // Black
+	float txt_gray_lvl = 1.0 - bckgr_gray_level;
+
+	// Original point cloud is white
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(source_cloud1_registration, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
+		(int)255 * txt_gray_lvl);
+	viewer.addPointCloud(source_cloud1_registration, cloud_in_color_h, "source_cloud1_registration_v1", v1);
+	viewer.addPointCloud(source_cloud1_registration, cloud_in_color_h, "source_cloud1_registration_v2", v2);
+
+	// Transformed point cloud is green
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_tr_color_h(cloud_tr, 20, 180, 20);
+	viewer.addPointCloud(cloud_tr, cloud_tr_color_h, "cloud_tr_v1", v1);
+
+	// ICP aligned point cloud is red
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_icp_color_h(cloud_icp, 180, 20, 20);
+	viewer.addPointCloud(cloud_icp, cloud_icp_color_h, "cloud_icp_v2", v2);
+
+	// Orginal point cloud is blue
+	//pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_all_color_h(cloud_in_all, 0, 191, 255);
+	//viewer.addPointCloud(cloud_in_all, cloud_all_color_h, "cloud_all_v2", v2);
+
+	// Adding text descriptions in each viewport
+	viewer.addText("White: Original point cloud\nGreen: Matrix transformed point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_1", v1);
+	viewer.addText("White: Original point cloud\nRed: ICP aligned point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_2", v2);
+
+	std::stringstream ss;
+	ss << iterations;
+	std::string iterations_cnt = "ICP iterations = " + ss.str();
+	viewer.addText(iterations_cnt, 10, 60, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "iterations_cnt", v2);
+
+	// Set background color
+	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level, v1);
+	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level, v2);
+
+	// Set camera position and orientation
+	viewer.setCameraPosition(-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
+	viewer.setSize(1280, 1024);  // Visualiser window size
+}
+
+
+//void Tools::savePointCloudFile(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr cloud_icp, int iterations) {
+void MainWindow::savePointCloudFile() {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	for (int j = 0; j < source_cloud1_registration->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = source_cloud1_registration->points[j].x;
+		p.y = source_cloud1_registration->points[j].y;
+		p.z = source_cloud1_registration->points[j].z;
+		p.r = 255;//红色
+		p.g = 0;
+		p.b = 0;
+		mergeCloud->points.push_back(p);
+	}
+
+	for (int j = 0; j < cloud_icp->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = cloud_icp->points[j].x;
+		p.y = cloud_icp->points[j].y;
+		p.z = cloud_icp->points[j].z;
+		p.r = 20;//绿色
+		p.g = 180;
+		p.b = 20;
+		mergeCloud->points.push_back(p);
+	}
+	// 设置并保存点云
+	mergeCloud->height = 1;
+	mergeCloud->width = mergeCloud->points.size();
+	mergeCloud->is_dense = false;
+
+	std::stringstream ss;
+	ss << iterations;
+	std::string fileName = "ICPmerge2-in-out-icp-" + ss.str() + ".pcd";
+
+	pcl::io::savePCDFile(fileName, *mergeCloud);
+
+	// 清除数据并退出
+	mergeCloud->points.clear();
+	std::cout << "已保存为" << fileName << std::endl;
+
+}
+
+
 // 打开文件
 void MainWindow::on_openFileAction_triggered()
 {
@@ -52,6 +182,75 @@ void MainWindow::on_openFileAction_triggered()
     viewer_cloud.removePointCloud("source");
     viewer_cloud.addPointCloud(source_cloud, "source");
     ui->qvtkWidget->update ();
+}
+//define by czh
+// 打开配准点云file_1 
+void MainWindow::on_openFile1_RegistrationAction_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
+	if (fileName == "") return;
+	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud1_registration);
+	cout << "loaded " << source_cloud->size() << " points." << endl;
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud1_registration, "source");
+	ui->qvtkWidget->update();
+}
+
+//define by czh
+// 打开配准点云file_2
+void MainWindow::on_openFile2_RegistrationAction_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
+	if (fileName == "") return;
+	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud2_registration);
+	cout << "loaded " << source_cloud->size() << " points." << endl;
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud2_registration, "source");
+	ui->qvtkWidget->update();
+}
+
+//define by czh
+//配准
+void MainWindow::on_registrationAction_triggered()
+{
+	pcl::console::TicToc time;
+	time.tic();
+
+	// Defining a rotation matrix and translation vector
+	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+
+	//tools->transformation(*source_cloud2_registration, *cloud_icp, transformation_matrix);
+	transformation(transformation_matrix);
+
+	pcl::IterativeClosestPoint<PointT, PointT> icp;
+	icp.setMaximumIterations(iterations);
+	icp.setInputSource(cloud_icp);
+	icp.setInputTarget(source_cloud1_registration);
+	icp.align(*cloud_icp);
+	icp.setMaximumIterations(1);  // We set this variable to 1 for the next time we will call .align () function
+	std::cout << "Applied " << iterations << " ICP iteration(s) in " << time.toc() << " ms" << std::endl;
+
+	if (icp.hasConverged())
+	{
+		std::cout << "\nICP has converged, score is " << icp.getFitnessScore() << std::endl;
+		std::cout << "\nICP transformation " << iterations << " : cloud_icp -> cloud_in" << std::endl;
+		transformation_matrix = icp.getFinalTransformation().cast<double>();
+		print4x4Matrix(transformation_matrix);
+
+		//update file
+		//tools->savePointCloudFile(cloud_in_1, cloud_icp, iterations);
+	}
+	else
+	{
+		PCL_ERROR("\nICP has not converged.\n");
+		system("pause");
+		return;
+	}
+
+	//tools->visualization(source_cloud1_registration, source_cloud2_registration, cloud_tr, cloud_icp, iterations);
+	visualization();
+	//tools->savePointCloudFile(source_cloud1_registration, cloud_icp, iterations);
+	savePointCloudFile();
 }
 // 改变背景颜色
 void MainWindow::on_bgColorMenu_triggered()
@@ -111,7 +310,7 @@ void MainWindow::on_translateToCentroidAction_triggered()
 void MainWindow::on_removeNanAction_triggered()
 {
     std::vector<int> indices;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr new_cloud (new PointCloudT);
     pcl::removeNaNFromPointCloud<pcl::PointXYZ>(*source_cloud, *new_cloud, indices);
     source_cloud = new_cloud;
 
@@ -138,7 +337,7 @@ void MainWindow::on_removeRedundantPointsAction_triggered()
         for(int j = 1; j < indices.size(); ++j)
             is_redundant[indices[j]] = true;
     }
-    pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr new_cloud (new PointCloudT);
     new_cloud->reserve(source_cloud->size());
     for(int i = 0; i < source_cloud->size(); ++i)
     {
@@ -318,7 +517,7 @@ void MainWindow::on_segPlaneAction_triggered()
     for(int i = 0; i < plane_clouds.size(); ++i)
     {
         Plane plane;
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+        PointCloudT::Ptr cloud (new PointCloudT);
         *cloud = *plane_clouds[i].points_set;
         plane.points_set = cloud;
         growth_unit_set.push_back(plane);
@@ -597,7 +796,7 @@ void MainWindow::on_savePolyDataAction_triggered()
     if (!fileName.isNull())
     {
         // 保存顶点序列
-        pcl::PointCloud<pcl::PointXYZ>::Ptr vertices (new pcl::PointCloud<pcl::PointXYZ>);
+        PointCloudT::Ptr vertices (new PointCloudT);
         for(int ii = 0; ii < plane_clouds_final.size(); ++ii)
         {
             for(int i = 0; i < plane_clouds_final[ii].border->size(); ++i)
@@ -700,7 +899,7 @@ void MainWindow::on_selCurPolyAction_triggered()
 void MainWindow::on_setFirstPointAction_triggered()
 {
     first_point = g_selected_point;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr cloud (new PointCloudT);
     cloud->push_back(first_point);
     viewer_cloud.removePointCloud("point");
     viewer_cloud.removePointCloud("first point");
@@ -713,7 +912,7 @@ void MainWindow::on_setFirstPointAction_triggered()
 void MainWindow::on_setSecondPointAction_triggered()
 {
     second_point = g_selected_point;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr cloud (new PointCloudT);
     cloud->push_back(second_point);
     viewer_cloud.removePointCloud("point");
     viewer_cloud.removePointCloud("second point");
@@ -746,7 +945,7 @@ void MainWindow::on_performPolyCutAction_triggered()
     }
     cout << "first_index = " << first_index << "; second_index = " << second_index << endl;
     // step1: 做好备份
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_backup (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr cloud_backup (new PointCloudT);
     *cloud_backup = *plane_clouds_final[g_selected_poly_id].border;
     plane_clouds_final[g_selected_poly_id].border->clear();
 
@@ -765,7 +964,7 @@ void MainWindow::on_performPolyCutAction_triggered()
 
     // step3: 增加一个多边形:second_index -> first_index
     Plane plane;
-    plane.border.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    plane.border.reset(new PointCloudT);
     plane.border->reserve(cloud_backup->size() - plane_clouds_final[g_selected_poly_id].border->size());
     cur_index = second_index;
     while(true)
@@ -808,7 +1007,7 @@ void MainWindow::on_displayLineSegAction_triggered()
     cout << "first_index = " << first_index << "; second_index = " << second_index << endl;
 
     // step1: 找到从first_point 到 second_point之间的点
-    pcl::PointCloud<pcl::PointXYZ>::Ptr line_points (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr line_points (new PointCloudT);
     int cur_index = first_index == plane_clouds_final[g_selected_poly_id].border->size() - 1 ?
                     0 : first_index + 1;
     while(cur_index != second_index)
@@ -878,7 +1077,7 @@ void MainWindow::on_loadPolyDataAction_triggered()
 // 进行体素滤波
 void MainWindow::on_voxelGridFiltAction_triggered()
 {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+    PointCloudT::Ptr cloud_filtered (new PointCloudT);
     pcl::VoxelGrid<pcl::PointXYZ> sor;
     sor.setInputCloud(source_cloud);
     float delta = 0.01f;

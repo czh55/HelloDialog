@@ -146,7 +146,16 @@
     <addaction name="separator"/>
     <addaction name="savePolyDataAction"/>
    </widget>
+   <widget class="QMenu" name="registrationMenu">
+    <property name="title">
+     <string>配准</string>
+    </property>
+    <addaction name="openFile1_RegistrationAction"/>
+    <addaction name="openFile2_RegistrationAction"/>
+    <addaction name="registrationAction"/>
+   </widget>
    <addaction name="fileMenu"/>
+   <addaction name="registrationMenu"/>
    <addaction name="renderPropertyMenu"/>
    <addaction name="pointCloudPreProcessMenu"/>
    <addaction name="param_set_menu"/>
@@ -364,6 +373,21 @@
   <action name="polyPlanesAction_2">
    <property name="text">
     <string>平面多边形化</string>
+   </property>
+  </action>
+  <action name="openFile1_RegistrationAction">
+   <property name="text">
+    <string>配准点云文件1</string>
+   </property>
+  </action>
+  <action name="openFile2_RegistrationAction">
+   <property name="text">
+    <string>配准点云文件2</string>
+   </property>
+  </action>
+  <action name="registrationAction">
+   <property name="text">
+    <string>执行配准</string>
    </property>
   </action>
  </widget>

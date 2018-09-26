@@ -8,10 +8,10 @@
 #include <QMainWindow>
 
 // Point Cloud Library
-#include <C:\Program Files\PCL 1.8.1\include\pcl-1.8\pcl\point_cloud.h>
-#include <C:\Program Files\PCL 1.8.1\include\pcl-1.8\pcl\point_types.h>
-#include <C:\Program Files\PCL 1.8.1\include\pcl-1.8\pcl\visualization/pcl_visualizer.h>
-#include <C:\Program Files\PCL 1.8.1\include\pcl-1.8\pcl\io\pcd_io.h>
+#include <pcl\point_cloud.h>
+#include <pcl\point_types.h>
+#include <pcl\visualization/pcl_visualizer.h>
+#include <pcl\io\pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
 //#include <pcl/visualization/
 
@@ -28,17 +28,36 @@ class MainWindow : public QMainWindow
 
 protected:
     // 绫绘垚鍛樺彉閲??
-    //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    //PointCloudT::Ptr cloud;
     //boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 
-    // std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr>> main_clouds;
+    // std::vector<PointCloudT::Ptr, Eigen::aligned_allocator<PointCloudT::Ptr>> main_clouds;
     RegulateNormalDialog RegulateNormalDialog;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public:
+	//Executing the transformation
+	void transformation(Eigen::Matrix4d transformation_matrix);
+	//void transformation(const PointCloudT &souce_cloud, PointCloudT &icp_cloud, Eigen::Matrix4d transformation_matrix);
+
+	void print4x4Matrix(const Eigen::Matrix4d & matrix);
+
+	void visualization();
+	//void visualization(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr source_cloud2_registration, PointCloudT::Ptr cloud_tr, PointCloudT::Ptr cloud_icp, int iterations);
+
+	void savePointCloudFile();
+	//void savePointCloudFile(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr cloud_icp, int iterations);
+
 private slots:
     void on_openFileAction_triggered();
+
+	void on_openFile1_RegistrationAction_triggered();
+	
+	void on_openFile2_RegistrationAction_triggered();
+	
+	void on_registrationAction_triggered();
 
     void on_bgColorMenu_triggered();
 

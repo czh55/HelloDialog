@@ -1,4 +1,8 @@
 #pragma once;
+
+#ifndef PLANEDETECT_H
+#define PLANEDETECT_H
+
 #include "HeaderFile.h"
 #include <QString>
 #include <pcl/features/normal_3d_omp.h>
@@ -32,8 +36,8 @@ struct Triangle
 struct Plane
 {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-	pcl::PointCloud<pcl::PointXYZ>::Ptr border;		// 平面的边界点
-	pcl::PointCloud<pcl::PointXYZ>::Ptr points_set;	// 平面点集
+	PointCloudT::Ptr border;		// 平面的边界点
+	PointCloudT::Ptr points_set;	// 平面点集
 	pcl::ModelCoefficients coeff;					// 平面参数，法向量指向物体外部
 	std::vector<Triangle, Eigen::aligned_allocator<Triangle>> triangles;	// 多边形的三角形面片
 };
@@ -127,12 +131,19 @@ std::vector<Plane, Eigen::aligned_allocator<Plane>> growth_unit_set;
 // 最终的平面集合
 std::vector<Plane, Eigen::aligned_allocator<Plane>> plane_clouds_final;
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+PointCloudT::Ptr source_cloud (new PointCloudT);
 pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_source;
 bool* isProcessed = NULL;
 pcl::PointCloud<pcl::Normal>::Ptr source_normal (new pcl::PointCloud<pcl::Normal>);
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud_backup (new pcl::PointCloud<pcl::PointXYZ>);
+//配准相关变量
+PointCloudT::Ptr source_cloud1_registration(new PointCloudT);
+PointCloudT::Ptr source_cloud2_registration(new PointCloudT);
+PointCloudT::Ptr cloud_tr(new PointCloudT);
+PointCloudT::Ptr cloud_icp(new PointCloudT);
+int iterations = 10;
+
+PointCloudT::Ptr source_cloud_backup (new PointCloudT);
 pcl::PointCloud<pcl::Normal>::Ptr source_normal_backup (new pcl::PointCloud<pcl::Normal>);
 bool isFirstLoop = true;
 
@@ -189,13 +200,13 @@ float arccos(float val)
 // 平面合并
 void mergePlanes();
 // 获取两个平面公共点的数量
-int getCommonPointsNumber(pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud1, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud2);
+int getCommonPointsNumber(PointCloudT::Ptr &cloud1, PointCloudT::Ptr &cloud2);
 // 将目标点云合并到源点云
-void mergeClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr &source, pcl::PointCloud<pcl::PointXYZ>::Ptr &target);
+void mergeClouds(PointCloudT::Ptr &source, PointCloudT::Ptr &target);
 // 多边形化平面点云
 void polyPlanes();
-void polyPointCloud( pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,  
-					 pcl::PointCloud<pcl::PointXYZ>::Ptr &border,
+void polyPointCloud( PointCloudT::Ptr &cloud,  
+					 PointCloudT::Ptr &border,
 					 Eigen::Vector3f &pn);
 // 将点投影到平面上
 void projPoint2Plane( pcl::PointXYZ &source_point, pcl::PointXYZ &dest_point, Eigen::Vector4f &plane_param );
@@ -408,7 +419,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 			for(int i = 0; i < plane_clouds.size(); ++i)
 			{
 				Plane plane;
-				pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+				PointCloudT::Ptr cloud (new PointCloudT);
 				*cloud = *plane_clouds[i].points_set;
 				plane.points_set = cloud;
 				growth_unit_set.push_back(plane);
@@ -588,7 +599,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 
 		if(strcmp(cmd, "save polys") == 0)
 		{
-			/*pcl::PointCloud<pcl::PointXYZ>::Ptr poly_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+			/*PointCloudT::Ptr poly_cloud (new PointCloudT);
 			int count = 0;
 			for(int ii = 0; ii < plane_clouds_final.size(); ++ii)
 			{
@@ -606,7 +617,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 
 			pcl::PolygonMesh pm;*/
 			/*pcl::PolygonMesh polygons;
-			pcl::PointCloud<pcl::PointXYZ> vertices;
+			PointCloudT vertices;
 			for(int ii = 0; ii < plane_clouds_final.size(); ++ii)
 			{
 				Plane plane = plane_clouds_final[ii];
@@ -630,7 +641,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 				base_index += num_of_vertices;
 			}*/
 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr vertices (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr vertices (new PointCloudT);
 			for(int ii = 0; ii < plane_clouds_final.size(); ++ii)
 			{
 				for(int i = 0; i < plane_clouds_final[ii].border->size(); ++i)
@@ -652,7 +663,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 
 		if(strcmp(cmd, "load polys") == 0)
 		{
-			pcl::PointCloud<pcl::PointXYZ>::Ptr vertices (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr vertices (new PointCloudT);
 			pcl::io::loadPCDFile("poly_vertices.pcd", *vertices);
 			std::ifstream file("poly_indices.txt", std::ios::out);
 			int num_of_polys = 0;
@@ -680,7 +691,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 			for(int ii = 0; ii < num_of_polys; ++ii)
 			{
 				Plane plane;
-				pcl::PointCloud<pcl::PointXYZ>::Ptr border (new pcl::PointCloud<pcl::PointXYZ>);
+				PointCloudT::Ptr border (new PointCloudT);
 				for(int i = base_index; i < base_index+poly_size[ii]; ++i)
 				{
 					border->push_back(vertices->points[i]);
@@ -699,7 +710,7 @@ DWORD WINAPI cmdFunc(LPVOID)
 			}
 			plane_clouds_final.clear();
 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr poly_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr poly_cloud (new PointCloudT);
 			pcl::io::loadPCDFile("poly.pcd", *poly_cloud);
 			viewer_cloud.removeAllPointClouds();
 			viewer_cloud.addPointCloud(poly_cloud,"poly");*/
@@ -718,8 +729,8 @@ DWORD WINAPI cmdFunc(LPVOID)
 			//		Plane plane;
 			//		plane_clouds_final.push_back(plane);
 
-			//		pcl::PointCloud<pcl::PointXYZ>::Ptr border (new pcl::PointCloud<pcl::PointXYZ>);
-			//		pcl::PointCloud<pcl::PointXYZ>::Ptr points (new pcl::PointCloud<pcl::PointXYZ>);
+			//		PointCloudT::Ptr border (new PointCloudT);
+			//		PointCloudT::Ptr points (new PointCloudT);
 			//		plane_clouds_final[plane_index].border = border;
 			//		plane_clouds_final[plane_index].points_set = points;
 			//		plane_clouds_final[plane_index].coeff.values.clear();
@@ -1000,7 +1011,7 @@ void loadPointNormal()
 void preProcess()
 {
 	// 去除nan无效点
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr cloud_out (new PointCloudT);
 	std::vector<int> index;
 	pcl::removeNaNFromPointCloud(*source_cloud, *cloud_out, index);
 	source_cloud = cloud_out;
@@ -1040,7 +1051,7 @@ void preProcess()
 	float radius = min_dist_between_points;
 	std::vector<int> indices;
 	std::vector<float> dist;
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_processed (new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr cloud_processed (new PointCloudT);
 	for(int i = 0; i < source_cloud->size(); ++i)
 	{
 		if(isProcessed[i]) continue;
@@ -1189,7 +1200,7 @@ void regulateNormal()
         }
 	}
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr processed_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr processed_cloud (new PointCloudT);
 	for(int i = 0; i < source_cloud->size(); ++i)
 	{
 		if(isProcessed[i])
@@ -1488,7 +1499,7 @@ void segmentPlanes()
 	{
 		int sink_index = sinkPointsSet[ii].index;
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr planes (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr planes (new PointCloudT);
 		pcl::PointXYZ p;
 		// 首先构造具有同样朝向的平面点云集合
 		for(int i = 0; i < ps_size; ++i)
@@ -1521,7 +1532,7 @@ void segmentPlanes()
 			int seedIndex = getSeedIndex(isProcessed, planes->size());
 			if(seedIndex == -1) break;
 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr plane (new PointCloudT);
 
 			std::queue<int> Q;
 			Q.push(seedIndex);
@@ -1571,7 +1582,7 @@ void growPlaneArea()
 	T_angle_bias_integrate = T_angle_bias_integrate * PI / 180.0f;
 
 	// 操作对象：初次分割的平面点云集合plane_clouds(vector类型);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr plane (new PointCloudT);
 
 	// 原始点云中的点是否已被处理过
 	bool *isProcessed = new bool[source_cloud->size()];
@@ -1831,7 +1842,7 @@ void mergePlanes()
 	delete []isNodeProcessed;
 }
 // 获取两个平面公共点的数量
-int getCommonPointsNumber(pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud1, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud2)
+int getCommonPointsNumber(PointCloudT::Ptr &cloud1, PointCloudT::Ptr &cloud2)
 {
 	bool *isMarked = new bool[source_cloud->size()];
 	memset(isMarked, 0, sizeof(bool)*source_cloud->size());
@@ -1866,7 +1877,7 @@ int getCommonPointsNumber(pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud1, pcl::Poin
 	return count;
 }
 // 将目标点云合并到源点云
-void mergeClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr &source, pcl::PointCloud<pcl::PointXYZ>::Ptr &target)
+void mergeClouds(PointCloudT::Ptr &source, PointCloudT::Ptr &target)
 {
 	bool *isMarked = new bool[source_cloud->size()];
 	memset(isMarked, 0, sizeof(bool)*source_cloud->size());
@@ -1908,9 +1919,9 @@ void polyPlanes()
 	for(int i = 0; i < plane_clouds_final.size(); ++i)
 	{
 		if(plane_clouds_final[i].border != NULL) continue;	// 避免多次跑的时候再次计算
-		pcl::PointCloud<pcl::PointXYZ>::Ptr border (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr border (new PointCloudT);
 		plane_clouds_final[i].border = border;
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr cloud (new PointCloudT);
 		*cloud = *plane_clouds_final[i].points_set;
 		Eigen::Vector3f pn;
 		pn << plane_clouds_final[i].coeff.values[0],
@@ -1919,8 +1930,8 @@ void polyPlanes()
 		polyPointCloud(/*plane_clouds_final[i].points_set*/cloud, plane_clouds_final[i].border, pn);
 	}
 }
-void polyPointCloud( pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,  
-					 pcl::PointCloud<pcl::PointXYZ>::Ptr &border,
+void polyPointCloud( PointCloudT::Ptr &cloud,  
+					 PointCloudT::Ptr &border,
 					 Eigen::Vector3f &pn)
 {
 	// 用最小二乘法构造平面方程
@@ -1947,7 +1958,7 @@ void polyPointCloud( pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
 	pcl::ConcaveHull<pcl::PointXYZ> caHull;
 	caHull.setInputCloud(cloud);
 	caHull.setAlpha(alpha_poly);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr output(new PointCloudT);
 	/*caHull.reconstruct(*output);*/
 	std::vector<pcl::Vertices> polygons;
 	caHull.reconstruct(*output, polygons);
@@ -2054,7 +2065,7 @@ void postProcessPlanes()
 	}
 	
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);	
+	PointCloudT::Ptr cloud (new PointCloudT);	
 	*cloud = *source_cloud;
 	source_cloud->clear();
 
@@ -2201,7 +2212,7 @@ void clusterFilt()
 		seed_index = -1;
 	}
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	PointCloudT::Ptr cloud (new PointCloudT);
 	*cloud = *source_cloud;
 	source_cloud->clear();
 	for(int i = 0; i < cloud->size(); ++i)
@@ -2603,7 +2614,7 @@ int point_index = -1;
 // 多边形编辑：
 pcl::PointXYZ g_selected_point;
 int g_selected_poly_id = -1;
-pcl::PointCloud<pcl::PointXYZ>::Ptr poly_centroids_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+PointCloudT::Ptr poly_centroids_cloud (new PointCloudT);
 pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_poly_centroids_cloud;
 std::vector<bool> g_is_poly_del;
 // 多边形修剪：
@@ -2618,7 +2629,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
 		cout << "selected point index = " << selected_point_index << endl;
 		cout << "open config.txt, and set the value of is_norm_direction_valid" << endl;
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr selected_point (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr selected_point (new PointCloudT);
 		selected_point->push_back(source_cloud->points[selected_point_index]);
 		pcl::PointCloud<pcl::Normal>::Ptr selected_normal (new pcl::PointCloud<pcl::Normal>);
 		selected_normal->push_back(source_normal->points[selected_point_index]);
@@ -2628,7 +2639,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
 			(selected_point, selected_normal,1,normal_length_for_selected,"selected normal");
 
         point_index = event.getPointIndex();
-        pcl::PointCloud<pcl::PointXYZ>::Ptr point (new pcl::PointCloud<pcl::PointXYZ>);
+        PointCloudT::Ptr point (new PointCloudT);
         point->push_back(source_cloud->points[point_index]);
         viewer_cloud.removePointCloud("point");
         viewer_cloud.addPointCloud(point, "point");
@@ -2641,7 +2652,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
 		cout << "point_index = " << point_index << endl;
 		cout << "growth_unit_id = " << growth_unit_id << endl;
 		
-		pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr plane (new PointCloudT);
 		plane = plane_clouds[growth_unit_id].points_set;
 
 		std::vector<int> indices;
@@ -2707,7 +2718,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
 		pn.normal_y = growth_unit_normal[1];
 		pn.normal_z = growth_unit_normal[2];
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr cloud1 (new PointCloudT);
 		cloud1->push_back(p);
 		pcl::PointCloud<pcl::Normal>::Ptr normal1 (new pcl::PointCloud<pcl::Normal>);
 		normal1->push_back(pn);
@@ -2719,7 +2730,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
 		pn.normal_x = local_point_normal[0];
 		pn.normal_y = local_point_normal[1];
 		pn.normal_z = local_point_normal[2];
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr cloud2 (new PointCloudT);
 		cloud2->push_back(p);
 		pcl::PointCloud<pcl::Normal>::Ptr normal2 (new pcl::PointCloud<pcl::Normal>);
 		normal2->push_back(pn);
@@ -2750,7 +2761,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
         g_selected_poly_id = indices[0];
 
         // 显示已经选取的点
-        pcl::PointCloud<pcl::PointXYZ>::Ptr point (new pcl::PointCloud<pcl::PointXYZ>);
+        PointCloudT::Ptr point (new PointCloudT);
         point->push_back(poly_centroids_cloud->points[g_selected_poly_id]);
         viewer_cloud.removePointCloud("point");
         viewer_cloud.addPointCloud(point, "point");
@@ -2767,7 +2778,7 @@ void pointPickingEventOccurred ( const pcl::visualization::PointPickingEvent &ev
     {
         event.getPoint(g_selected_point.x, g_selected_point.y, g_selected_point.z);
         // 显示已经选取的点
-        pcl::PointCloud<pcl::PointXYZ>::Ptr point (new pcl::PointCloud<pcl::PointXYZ>);
+        PointCloudT::Ptr point (new PointCloudT);
         point->push_back(g_selected_point);
         viewer_cloud.removePointCloud("point");
         viewer_cloud.addPointCloud(point, "point");
@@ -2792,7 +2803,7 @@ void areaPickingEventOccurred ( const pcl::visualization::AreaPickingEvent &even
 		viewer_cloud.removeAllShapes();
 		viewer_cloud.addSphere(source_cloud->points[point_index], r_for_estimate_normal, 0, 255, 0, "sphere");
 		viewer_cloud.removePointCloud("point");
-		pcl::PointCloud<pcl::PointXYZ>::Ptr point (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr point (new PointCloudT);
 		point->push_back(source_cloud->points[point_index]);
 		viewer_cloud.addPointCloud(point, "point");
 		viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 255, 0, 0, "point");
@@ -2806,7 +2817,7 @@ void areaPickingEventOccurred ( const pcl::visualization::AreaPickingEvent &even
 		cout << "selected point index = " << selected_point_index << endl;
 		cout << "open config.txt, and set the value of is_norm_direction_valid" << endl;
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr selected_point (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr selected_point (new PointCloudT);
 		selected_point->push_back(source_cloud->points[selected_point_index]);
 		pcl::PointCloud<pcl::Normal>::Ptr selected_normal (new pcl::PointCloud<pcl::Normal>);
 		selected_normal->push_back(source_normal->points[selected_point_index]);
@@ -2817,7 +2828,7 @@ void areaPickingEventOccurred ( const pcl::visualization::AreaPickingEvent &even
 
 		
 		point_index = indices[0];
-		pcl::PointCloud<pcl::PointXYZ>::Ptr point (new pcl::PointCloud<pcl::PointXYZ>);
+		PointCloudT::Ptr point (new PointCloudT);
 		point->push_back(source_cloud->points[point_index]);
 		viewer_cloud.removePointCloud("point");
 		viewer_cloud.addPointCloud(point, "point");
@@ -2854,7 +2865,7 @@ void keyboardEventOccurred_ps (const pcl::visualization::KeyboardEvent &event,
 			cout << "ps points size = " << cloud->size() << endl;
 
 			// 对测量空间
-			pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr plane (new PointCloudT);
 			for(int i = 0; i < ps_cloud->size(); ++i)
 			{
 				if(param_space[i].sink == sink_index)
@@ -2893,7 +2904,7 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 		if(strcmp(state,"segment planes")==0 /*|| strcmp(state,"grow planes")==0*/)
 		{
 			cout << "id_plane = " << id_plane << endl;
-			pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr plane (new PointCloudT);
 			plane = plane_clouds[id_plane].points_set;
 			viewer_cloud.removePointCloud("plane");
 			viewer_cloud.addPointCloud(plane, "plane");
@@ -2906,8 +2917,8 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 		if(strcmp(state,"grow planes")==0)
 		{
 			cout << "id_plane = " << id_plane << endl;
-			pcl::PointCloud<pcl::PointXYZ>::Ptr growth_unit (new pcl::PointCloud<pcl::PointXYZ>);
-			pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr growth_unit (new PointCloudT);
+			PointCloudT::Ptr plane (new PointCloudT);
 			viewer_cloud.removePointCloud("plane");
 			viewer_cloud.removePointCloud("growth_unit");
 			growth_unit = growth_unit_set[id_plane].points_set;
@@ -2924,7 +2935,7 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 		if(strcmp(state,"merge planes")==0 || strcmp(state,"do")==0)
 		{
 			cout << "id_plane = " << id_plane << endl;
-			pcl::PointCloud<pcl::PointXYZ>::Ptr plane (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr plane (new PointCloudT);
 			plane = plane_clouds_final[id_plane].points_set;
 			viewer_cloud.removePointCloud("plane");
 			viewer_cloud.addPointCloud(plane, "plane");
@@ -2937,7 +2948,7 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 		{
 			viewer_cloud.removeAllShapes();
 			cout << "id_plane = " << id_plane << endl;
-			pcl::PointCloud<pcl::PointXYZ>::Ptr border (new pcl::PointCloud<pcl::PointXYZ>);
+			PointCloudT::Ptr border (new PointCloudT);
 			border = plane_clouds_final[id_plane].border;
 			for(int i = 0; i < border->size()-1;++i)
 			{
@@ -2970,7 +2981,7 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 	{
 		viewer_cloud.removeAllShapes();
 		pcl::PolygonMesh polygons;
-		pcl::PointCloud<pcl::PointXYZ> vertices;
+		PointCloudT vertices;
 		for(int ii = 0; ii < plane_clouds_final.size(); ++ii)
 		{
 			Plane plane = plane_clouds_final[ii];
@@ -3247,3 +3258,5 @@ void processStateMsg()
 		memset(state, 0, CMD_SIZE);
 	}
 }
+
+#endif  //PLANEDETECT_H

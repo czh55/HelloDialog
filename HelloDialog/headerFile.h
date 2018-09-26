@@ -25,8 +25,13 @@
 #include <pcl\surface\vtk_smoothing\vtk_utils.h>
 #include <pcl/visualization/common/actor_map.h>
 
+#include <pcl/registration/icp.h>
+#include <pcl/console/time.h>   // TicToc
 
-typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+
+//typedef pcl::PointXYZRGB PointT;
 const int ARGU_BUFFER_SIZE = 256;		// 参数缓冲区大小
 extern char g_argu_buffer[ARGU_BUFFER_SIZE];	// 参数缓冲区
 

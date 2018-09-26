@@ -69,6 +69,9 @@ public:
     QAction *switchLineSegAction;
     QAction *performLineSegDelAction;
     QAction *polyPlanesAction_2;
+    QAction *openFile1_RegistrationAction;
+    QAction *openFile2_RegistrationAction;
+    QAction *registrationAction;
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
@@ -85,6 +88,7 @@ public:
     QMenu *segmentMenu;
     QMenu *editPolyMenu;
     QMenu *delLineSegMenu;
+    QMenu *registrationMenu;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -175,6 +179,12 @@ public:
         performLineSegDelAction->setObjectName(QStringLiteral("performLineSegDelAction"));
         polyPlanesAction_2 = new QAction(MainWindow);
         polyPlanesAction_2->setObjectName(QStringLiteral("polyPlanesAction_2"));
+        openFile1_RegistrationAction = new QAction(MainWindow);
+        openFile1_RegistrationAction->setObjectName(QStringLiteral("openFile1_RegistrationAction"));
+        openFile2_RegistrationAction = new QAction(MainWindow);
+        openFile2_RegistrationAction->setObjectName(QStringLiteral("openFile2_RegistrationAction"));
+        registrationAction = new QAction(MainWindow);
+        registrationAction->setObjectName(QStringLiteral("registrationAction"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -216,6 +226,8 @@ public:
         editPolyMenu->setObjectName(QStringLiteral("editPolyMenu"));
         delLineSegMenu = new QMenu(editPolyMenu);
         delLineSegMenu->setObjectName(QStringLiteral("delLineSegMenu"));
+        registrationMenu = new QMenu(menuBar);
+        registrationMenu->setObjectName(QStringLiteral("registrationMenu"));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -225,6 +237,7 @@ public:
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(fileMenu->menuAction());
+        menuBar->addAction(registrationMenu->menuAction());
         menuBar->addAction(renderPropertyMenu->menuAction());
         menuBar->addAction(pointCloudPreProcessMenu->menuAction());
         menuBar->addAction(param_set_menu->menuAction());
@@ -281,6 +294,9 @@ public:
         delLineSegMenu->addAction(displayLineSegAction);
         delLineSegMenu->addAction(switchLineSegAction);
         delLineSegMenu->addAction(performLineSegDelAction);
+        registrationMenu->addAction(openFile1_RegistrationAction);
+        registrationMenu->addAction(openFile2_RegistrationAction);
+        registrationMenu->addAction(registrationAction);
 
         retranslateUi(MainWindow);
 
@@ -331,6 +347,9 @@ public:
         switchLineSegAction->setText(QApplication::translate("MainWindow", "\347\272\277\346\256\265\345\210\207\346\215\242", Q_NULLPTR));
         performLineSegDelAction->setText(QApplication::translate("MainWindow", "\346\211\247\350\241\214\345\210\240\351\231\244", Q_NULLPTR));
         polyPlanesAction_2->setText(QApplication::translate("MainWindow", "\345\271\263\351\235\242\345\244\232\350\276\271\345\275\242\345\214\226", Q_NULLPTR));
+        openFile1_RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2661", Q_NULLPTR));
+        openFile2_RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662", Q_NULLPTR));
+        registrationAction->setText(QApplication::translate("MainWindow", "\346\211\247\350\241\214\351\205\215\345\207\206", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));
@@ -342,6 +361,7 @@ public:
         segmentMenu->setTitle(QApplication::translate("MainWindow", "\345\210\206\345\211\262", Q_NULLPTR));
         editPolyMenu->setTitle(QApplication::translate("MainWindow", "\345\244\232\350\276\271\345\275\242\347\274\226\350\276\221", Q_NULLPTR));
         delLineSegMenu->setTitle(QApplication::translate("MainWindow", "\347\272\277\346\256\265\345\210\240\351\231\244", Q_NULLPTR));
+        registrationMenu->setTitle(QApplication::translate("MainWindow", "\351\205\215\345\207\206", Q_NULLPTR));
     } // retranslateUi
 
 };
