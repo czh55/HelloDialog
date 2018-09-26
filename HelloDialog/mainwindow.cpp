@@ -124,6 +124,12 @@ void MainWindow::visualization()
 	// Set camera position and orientation
 	viewer.setCameraPosition(-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
 	viewer.setSize(1280, 1024);  // Visualiser window size
+
+	// Display the visualiser
+	while (!viewer.wasStopped())
+	{
+		viewer.spinOnce();
+	}
 }
 
 
@@ -229,7 +235,7 @@ void MainWindow::on_registrationAction_triggered()
 	icp.align(*cloud_icp);
 	icp.setMaximumIterations(1);  // We set this variable to 1 for the next time we will call .align () function
 	std::cout << "Applied " << iterations << " ICP iteration(s) in " << time.toc() << " ms" << std::endl;
-
+	
 	if (icp.hasConverged())
 	{
 		std::cout << "\nICP has converged, score is " << icp.getFitnessScore() << std::endl;
@@ -246,7 +252,7 @@ void MainWindow::on_registrationAction_triggered()
 		system("pause");
 		return;
 	}
-
+	
 	//tools->visualization(source_cloud1_registration, source_cloud2_registration, cloud_tr, cloud_icp, iterations);
 	visualization();
 	//tools->savePointCloudFile(source_cloud1_registration, cloud_icp, iterations);
