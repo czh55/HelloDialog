@@ -190,7 +190,7 @@ void MainWindow::on_openFile1_RegistrationAction_triggered()
 	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
 	if (fileName == "") return;
 	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud1_registration);
-	cout << "loaded " << source_cloud->size() << " points." << endl;
+	cout << "loaded " << source_cloud1_registration->size() << " points." << endl;
 	viewer_cloud.removePointCloud("source");
 	viewer_cloud.addPointCloud(source_cloud1_registration, "source");
 	ui->qvtkWidget->update();
@@ -203,7 +203,7 @@ void MainWindow::on_openFile2_RegistrationAction_triggered()
 	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
 	if (fileName == "") return;
 	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud2_registration);
-	cout << "loaded " << source_cloud->size() << " points." << endl;
+	cout << "loaded " << source_cloud2_registration->size() << " points." << endl;
 	viewer_cloud.removePointCloud("source");
 	viewer_cloud.addPointCloud(source_cloud2_registration, "source");
 	ui->qvtkWidget->update();
