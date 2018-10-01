@@ -71,7 +71,13 @@ public:
     QAction *polyPlanesAction_2;
     QAction *openFile1_RegistrationAction;
     QAction *openFile2_RegistrationAction;
-    QAction *registrationAction;
+    QAction *registrationICPAction;
+    QAction *action;
+    QAction *repairHolesAction;
+    QAction *openFile1RegistrationAction;
+    QAction *openFile2RegistrationAction;
+    QAction *registrationSACAction;
+    QAction *rotatePointCloudAction;
     QWidget *centralWidget;
     QWidget *gridLayoutWidget;
     QGridLayout *gridLayout;
@@ -89,6 +95,7 @@ public:
     QMenu *editPolyMenu;
     QMenu *delLineSegMenu;
     QMenu *registrationMenu;
+    QMenu *repairHolesMenu;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -183,8 +190,20 @@ public:
         openFile1_RegistrationAction->setObjectName(QStringLiteral("openFile1_RegistrationAction"));
         openFile2_RegistrationAction = new QAction(MainWindow);
         openFile2_RegistrationAction->setObjectName(QStringLiteral("openFile2_RegistrationAction"));
-        registrationAction = new QAction(MainWindow);
-        registrationAction->setObjectName(QStringLiteral("registrationAction"));
+        registrationICPAction = new QAction(MainWindow);
+        registrationICPAction->setObjectName(QStringLiteral("registrationICPAction"));
+        action = new QAction(MainWindow);
+        action->setObjectName(QStringLiteral("action"));
+        repairHolesAction = new QAction(MainWindow);
+        repairHolesAction->setObjectName(QStringLiteral("repairHolesAction"));
+        openFile1RegistrationAction = new QAction(MainWindow);
+        openFile1RegistrationAction->setObjectName(QStringLiteral("openFile1RegistrationAction"));
+        openFile2RegistrationAction = new QAction(MainWindow);
+        openFile2RegistrationAction->setObjectName(QStringLiteral("openFile2RegistrationAction"));
+        registrationSACAction = new QAction(MainWindow);
+        registrationSACAction->setObjectName(QStringLiteral("registrationSACAction"));
+        rotatePointCloudAction = new QAction(MainWindow);
+        rotatePointCloudAction->setObjectName(QStringLiteral("rotatePointCloudAction"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayoutWidget = new QWidget(centralWidget);
@@ -228,6 +247,8 @@ public:
         delLineSegMenu->setObjectName(QStringLiteral("delLineSegMenu"));
         registrationMenu = new QMenu(menuBar);
         registrationMenu->setObjectName(QStringLiteral("registrationMenu"));
+        repairHolesMenu = new QMenu(menuBar);
+        repairHolesMenu->setObjectName(QStringLiteral("repairHolesMenu"));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -237,12 +258,15 @@ public:
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(fileMenu->menuAction());
-        menuBar->addAction(registrationMenu->menuAction());
         menuBar->addAction(renderPropertyMenu->menuAction());
         menuBar->addAction(pointCloudPreProcessMenu->menuAction());
+        menuBar->addAction(registrationMenu->menuAction());
+        menuBar->addAction(repairHolesMenu->menuAction());
         menuBar->addAction(param_set_menu->menuAction());
         menuBar->addAction(plane_detect_menu->menuAction());
         fileMenu->addAction(openFileAction);
+        fileMenu->addAction(openFile1RegistrationAction);
+        fileMenu->addAction(openFile2RegistrationAction);
         fileMenu->addAction(openPointCloudNormalFileAction);
         fileMenu->addAction(loadPolyDataAction);
         renderPropertyMenu->addAction(bgColorMenu);
@@ -294,9 +318,10 @@ public:
         delLineSegMenu->addAction(displayLineSegAction);
         delLineSegMenu->addAction(switchLineSegAction);
         delLineSegMenu->addAction(performLineSegDelAction);
-        registrationMenu->addAction(openFile1_RegistrationAction);
-        registrationMenu->addAction(openFile2_RegistrationAction);
-        registrationMenu->addAction(registrationAction);
+        registrationMenu->addAction(rotatePointCloudAction);
+        registrationMenu->addAction(registrationSACAction);
+        registrationMenu->addAction(registrationICPAction);
+        repairHolesMenu->addAction(repairHolesAction);
 
         retranslateUi(MainWindow);
 
@@ -349,7 +374,13 @@ public:
         polyPlanesAction_2->setText(QApplication::translate("MainWindow", "\345\271\263\351\235\242\345\244\232\350\276\271\345\275\242\345\214\226", Q_NULLPTR));
         openFile1_RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2661", Q_NULLPTR));
         openFile2_RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662", Q_NULLPTR));
-        registrationAction->setText(QApplication::translate("MainWindow", "\346\211\247\350\241\214\351\205\215\345\207\206", Q_NULLPTR));
+        registrationICPAction->setText(QApplication::translate("MainWindow", "\346\211\247\350\241\214ICP\351\205\215\345\207\206", Q_NULLPTR));
+        action->setText(QApplication::translate("MainWindow", "\345\257\271\345\275\223\345\211\215\347\202\271\344\272\221\344\275\223\347\264\240\346\273\244\346\263\242", Q_NULLPTR));
+        repairHolesAction->setText(QApplication::translate("MainWindow", "\346\217\220\345\217\226\345\255\224\346\264\236\350\276\271\347\274\230", Q_NULLPTR));
+        openFile1RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2661", Q_NULLPTR));
+        openFile2RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662", Q_NULLPTR));
+        registrationSACAction->setText(QApplication::translate("MainWindow", "SAC\347\262\227\351\205\215\345\207\206", Q_NULLPTR));
+        rotatePointCloudAction->setText(QApplication::translate("MainWindow", "\346\227\213\350\275\254\347\202\271\344\272\221", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));
@@ -362,6 +393,7 @@ public:
         editPolyMenu->setTitle(QApplication::translate("MainWindow", "\345\244\232\350\276\271\345\275\242\347\274\226\350\276\221", Q_NULLPTR));
         delLineSegMenu->setTitle(QApplication::translate("MainWindow", "\347\272\277\346\256\265\345\210\240\351\231\244", Q_NULLPTR));
         registrationMenu->setTitle(QApplication::translate("MainWindow", "\351\205\215\345\207\206", Q_NULLPTR));
+        repairHolesMenu->setTitle(QApplication::translate("MainWindow", "\345\255\224\346\264\236\344\277\256\345\244\215", Q_NULLPTR));
     } // retranslateUi
 
 };

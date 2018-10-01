@@ -44,6 +44,8 @@
      <string>文件</string>
     </property>
     <addaction name="openFileAction"/>
+    <addaction name="openFile1RegistrationAction"/>
+    <addaction name="openFile2RegistrationAction"/>
     <addaction name="openPointCloudNormalFileAction"/>
     <addaction name="loadPolyDataAction"/>
    </widget>
@@ -150,14 +152,21 @@
     <property name="title">
      <string>配准</string>
     </property>
-    <addaction name="openFile1_RegistrationAction"/>
-    <addaction name="openFile2_RegistrationAction"/>
-    <addaction name="registrationAction"/>
+    <addaction name="rotatePointCloudAction"/>
+    <addaction name="registrationSACAction"/>
+    <addaction name="registrationICPAction"/>
+   </widget>
+   <widget class="QMenu" name="repairHolesMenu">
+    <property name="title">
+     <string>孔洞修复</string>
+    </property>
+    <addaction name="repairHolesAction"/>
    </widget>
    <addaction name="fileMenu"/>
-   <addaction name="registrationMenu"/>
    <addaction name="renderPropertyMenu"/>
    <addaction name="pointCloudPreProcessMenu"/>
+   <addaction name="registrationMenu"/>
+   <addaction name="repairHolesMenu"/>
    <addaction name="param_set_menu"/>
    <addaction name="plane_detect_menu"/>
   </widget>
@@ -385,9 +394,39 @@
     <string>配准点云文件2</string>
    </property>
   </action>
-  <action name="registrationAction">
+  <action name="registrationICPAction">
    <property name="text">
-    <string>执行配准</string>
+    <string>执行ICP配准</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>对当前点云体素滤波</string>
+   </property>
+  </action>
+  <action name="repairHolesAction">
+   <property name="text">
+    <string>提取孔洞边缘</string>
+   </property>
+  </action>
+  <action name="openFile1RegistrationAction">
+   <property name="text">
+    <string>配准点云文件1_target</string>
+   </property>
+  </action>
+  <action name="openFile2RegistrationAction">
+   <property name="text">
+    <string>配准点云文件2_source</string>
+   </property>
+  </action>
+  <action name="registrationSACAction">
+   <property name="text">
+    <string>SAC粗配准</string>
+   </property>
+  </action>
+  <action name="rotatePointCloudAction">
+   <property name="text">
+    <string>旋转点云</string>
    </property>
   </action>
  </widget>

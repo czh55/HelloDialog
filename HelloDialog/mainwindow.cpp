@@ -44,7 +44,7 @@ MainWindow::~MainWindow()
 }
 
 //void Tools::transformation(const PointCloudT &souce_cloud, PointCloudT &icp_cloud, Eigen::Matrix4d transformation_matrix) {
-void MainWindow::transformation(Eigen::Matrix4d transformation_matrix) {
+void MainWindow::transformation() {
 
 	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
 	double theta = M_PI / 8;  // The angle of rotation in radians
@@ -61,7 +61,7 @@ void MainWindow::transformation(Eigen::Matrix4d transformation_matrix) {
 	print4x4Matrix(transformation_matrix);
 
 	// Executing the transformation
-	pcl::transformPointCloud(*source_cloud2_registration, *cloud_icp, transformation_matrix);
+	pcl::transformPointCloud(*source_cloud_registration, *cloud_tr, transformation_matrix);
 
 }
 
@@ -75,7 +75,7 @@ void MainWindow::print4x4Matrix(const Eigen::Matrix4d & matrix)
 	printf("t = < %6.3f, %6.3f, %6.3f >\n\n", matrix(0, 3), matrix(1, 3), matrix(2, 3));
 }
 
-//void Tools::visualization(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr source_cloud2_registration, PointCloudT::Ptr cloud_tr, PointCloudT::Ptr cloud_icp, int iterations)
+//void Tools::visualization(PointCloudT::Ptr target_cloud_registration, PointCloudT::Ptr source_cloud_registration, PointCloudT::Ptr cloud_tr, PointCloudT::Ptr cloud_icp, int iterations)
 void MainWindow::visualization()
 {
 	// Visualization
@@ -91,10 +91,10 @@ void MainWindow::visualization()
 	float txt_gray_lvl = 1.0 - bckgr_gray_level;
 
 	// Original point cloud is white
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(source_cloud1_registration, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h(target_cloud_registration, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
 		(int)255 * txt_gray_lvl);
-	viewer.addPointCloud(source_cloud1_registration, cloud_in_color_h, "source_cloud1_registration_v1", v1);
-	viewer.addPointCloud(source_cloud1_registration, cloud_in_color_h, "source_cloud1_registration_v2", v2);
+	viewer.addPointCloud(target_cloud_registration, cloud_in_color_h, "target_cloud_registration_v1", v1);
+	viewer.addPointCloud(target_cloud_registration, cloud_in_color_h, "target_cloud_registration_v2", v2);
 
 	// Transformed point cloud is green
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_tr_color_h(cloud_tr, 20, 180, 20);
@@ -133,16 +133,16 @@ void MainWindow::visualization()
 }
 
 
-//void Tools::savePointCloudFile(PointCloudT::Ptr source_cloud1_registration, PointCloudT::Ptr cloud_icp, int iterations) {
+//void Tools::savePointCloudFile(PointCloudT::Ptr target_cloud_registration, PointCloudT::Ptr cloud_icp, int iterations) {
 void MainWindow::savePointCloudFile() {
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-	for (int j = 0; j < source_cloud1_registration->points.size(); j += 1)
+	for (int j = 0; j < target_cloud_registration->points.size(); j += 1)
 	{
 		pcl::PointXYZRGB p;
-		p.x = source_cloud1_registration->points[j].x;
-		p.y = source_cloud1_registration->points[j].y;
-		p.z = source_cloud1_registration->points[j].z;
+		p.x = target_cloud_registration->points[j].x;
+		p.y = target_cloud_registration->points[j].y;
+		p.z = target_cloud_registration->points[j].z;
 		p.r = 255;//红色
 		p.g = 0;
 		p.b = 0;
@@ -190,48 +190,180 @@ void MainWindow::on_openFileAction_triggered()
     ui->qvtkWidget->update ();
 }
 //define by czh
-// 打开配准点云file_1 
-void MainWindow::on_openFile1_RegistrationAction_triggered()
+// 打开配准点云file_1  target_cloud_registration
+void MainWindow::on_openFile1RegistrationAction_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
 	if (fileName == "") return;
-	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud1_registration);
-	cout << "loaded " << source_cloud1_registration->size() << " points." << endl;
+	pcl::io::loadPCDFile(fileName.toStdString(), *target_cloud_registration);
+	cout << "loaded " << target_cloud_registration->size() << " points." << endl;
 	viewer_cloud.removePointCloud("source");
-	viewer_cloud.addPointCloud(source_cloud1_registration, "source");
+	viewer_cloud.addPointCloud(target_cloud_registration, "source");
 	ui->qvtkWidget->update();
 }
 
 //define by czh
-// 打开配准点云file_2
-void MainWindow::on_openFile2_RegistrationAction_triggered()
+// 打开配准点云file_2  source_cloud_registration
+void MainWindow::on_openFile2RegistrationAction_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("pcdFiles(*.pcd)"));
 	if (fileName == "") return;
-	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud2_registration);
-	cout << "loaded " << source_cloud2_registration->size() << " points." << endl;
+	pcl::io::loadPCDFile(fileName.toStdString(), *source_cloud_registration);
+	cout << "loaded " << source_cloud_registration->size() << " points." << endl;
 	viewer_cloud.removePointCloud("source");
-	viewer_cloud.addPointCloud(source_cloud2_registration, "source");
+	viewer_cloud.addPointCloud(source_cloud_registration, "source");
 	ui->qvtkWidget->update();
+}
+
+//define by czh
+// 移除NaN点
+//输入变量：source_cloud_registration  target_cloud_registration
+//输出变量：source_cloud_registration  target_cloud_registration
+void MainWindow::on_removeNanAction_triggered()
+{
+	/* std::vector<int> indices;
+	PointCloudT::Ptr new_cloud (new PointCloudT);
+	pcl::removeNaNFromPointCloud<pcl::PointXYZ>(*source_cloud, *new_cloud, indices);
+	source_cloud = new_cloud;
+
+	cout << "After nan points been removed, points size =" << source_cloud->size() << endl;*/
+
+	//define by czh
+	//去除NAN点 source_cloud_registration
+	std::vector<int> indices_src; //保存去除的点的索引
+	pcl::removeNaNFromPointCloud(*source_cloud_registration, *source_cloud_registration, indices_src);
+	std::cout << "remove *source_cloud_registration nan" << endl;
+	//去除NAN点 target_cloud_registration
+	std::vector<int> indices_tgt;
+	pcl::removeNaNFromPointCloud(*target_cloud_registration, *target_cloud_registration, indices_tgt);
+	std::cout << "remove *target_cloud_registration nan" << endl;
+}
+//define by czh
+// 进行体素滤波
+//输入变量：source_cloud_registration  target_cloud_registration
+//输出变量：source_cloud_registration  target_cloud_registration
+void MainWindow::on_voxelGridFiltAction_triggered()
+{
+	/* PointCloudT::Ptr cloud_filtered (new PointCloudT);
+	pcl::VoxelGrid<pcl::PointXYZ> sor;
+	sor.setInputCloud(source_cloud);
+	float delta = 0.12f;
+	sor.setLeafSize(delta, delta, delta);
+	sor.filter(*cloud_filtered);
+	cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
+	source_cloud = cloud_filtered;
+	viewer_cloud.removeAllPointClouds();
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	viewer_cloud.spinOnce();*/
+	
+	
+	//下采样滤波 source_cloud_registration
+	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
+	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
+	voxel_grid.setInputCloud(source_cloud_registration);
+	int pointCloud_num1 = source_cloud_registration->size();
+	PointCloudT::Ptr cloud_tr(new PointCloudT);
+	voxel_grid.filter(*source_cloud_registration);
+	std::cout << "down size *cloud_tr_o from " << pointCloud_num1 << "to" << source_cloud_registration->size() << endl;
+	//下采样滤波 cloud_tgt_o
+	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_2;
+	voxel_grid_2.setLeafSize(0.012, 0.012, 0.012);
+	voxel_grid_2.setInputCloud(target_cloud_registration);
+	int pointCloud_num2 = target_cloud_registration->size();
+	PointCloudT::Ptr cloud_tgt(new PointCloudT);
+	voxel_grid_2.filter(*target_cloud_registration);
+	std::cout << "down size *cloud_tgt_o.pcd from " << pointCloud_num2 << "to" << target_cloud_registration->size() << endl;
+	
+
+}
+//define by czh
+//旋转原点云
+//输入数据：source_cloud_registration
+//输出数据：cloud_tr
+void MainWindow::on_rotatePointCloudAction_triggered() {
+
+	//tools->transformation(*source_cloud_registration, *cloud_icp, transformation_matrix);
+	transformation();
+}
+//define by czh 
+//SAC配准
+//输入数据：cloud_tr target_cloud_registration 
+//输出数据：cloud_icp
+void MainWindow::on_registrationSACAction_triggered() {
+	//计算表面法线1
+	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne_src;
+	ne_src.setInputCloud(cloud_tr);
+	pcl::search::KdTree< pcl::PointXYZ>::Ptr tree_src(new pcl::search::KdTree< pcl::PointXYZ>());
+	ne_src.setSearchMethod(tree_src);
+	pcl::PointCloud<pcl::Normal>::Ptr cloud_src_normals(new pcl::PointCloud< pcl::Normal>);
+	ne_src.setRadiusSearch(0.02);
+	ne_src.compute(*cloud_src_normals);
+	//计算表面法线2
+	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne_tgt;
+	ne_tgt.setInputCloud(target_cloud_registration);
+	pcl::search::KdTree< pcl::PointXYZ>::Ptr tree_tgt(new pcl::search::KdTree< pcl::PointXYZ>());
+	ne_tgt.setSearchMethod(tree_tgt);
+	pcl::PointCloud<pcl::Normal>::Ptr cloud_tgt_normals(new pcl::PointCloud< pcl::Normal>);
+	//ne_tgt.setKSearch(20);
+	ne_tgt.setRadiusSearch(0.02);
+	ne_tgt.compute(*cloud_tgt_normals);
+
+	//计算FPFH 1
+	pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_src;
+	fpfh_src.setInputCloud(cloud_tr);
+	fpfh_src.setInputNormals(cloud_src_normals);
+	pcl::search::KdTree<PointT>::Ptr tree_src_fpfh(new pcl::search::KdTree<PointT>);
+	fpfh_src.setSearchMethod(tree_src_fpfh);
+	pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs_src(new pcl::PointCloud<pcl::FPFHSignature33>());
+	fpfh_src.setRadiusSearch(0.05);
+	fpfh_src.compute(*fpfhs_src);
+	std::cout << "compute *cloud_tr fpfh" << endl;
+	//计算FPFH 2
+	pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_tgt;
+	fpfh_tgt.setInputCloud(target_cloud_registration);
+	fpfh_tgt.setInputNormals(cloud_tgt_normals);
+	pcl::search::KdTree<PointT>::Ptr tree_tgt_fpfh(new pcl::search::KdTree<PointT>);
+	fpfh_tgt.setSearchMethod(tree_tgt_fpfh);
+	pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs_tgt(new pcl::PointCloud<pcl::FPFHSignature33>());
+	fpfh_tgt.setRadiusSearch(0.05);
+	fpfh_tgt.compute(*fpfhs_tgt);
+	std::cout << "compute *cloud_tgt fpfh" << endl;
+
+	//SAC配准
+	pcl::SampleConsensusInitialAlignment<pcl::PointXYZ, pcl::PointXYZ, pcl::FPFHSignature33> scia;
+	scia.setInputSource(cloud_tr);
+	scia.setInputTarget(target_cloud_registration);
+	scia.setSourceFeatures(fpfhs_src);
+	scia.setTargetFeatures(fpfhs_tgt);
+	//scia.setMinSampleDistance(1);
+	//scia.setNumberOfSamples(2);
+	//scia.setCorrespondenceRandomness(20);
+	scia.align(*cloud_icp);
+	//输出SAC旋转矩阵
+	std::cout << "sac has converged:" << scia.hasConverged() << "  score: " << scia.getFitnessScore() << endl;
+	Eigen::Matrix4f sac_trans;
+	sac_trans = scia.getFinalTransformation();
+	std::cout << sac_trans << endl;
+	clock_t sac_time = clock();
+	std::cout << "SAC done" << endl;
+	//显示SAC效果
+	visualization();
+
 }
 
 //define by czh
 //配准
-void MainWindow::on_registrationAction_triggered()
+//输入数据：target_cloud_registration cloud_icp
+//输出数据：cloud_icp
+void MainWindow::on_registrationICPAction_triggered()
 {
 	pcl::console::TicToc time;
 	time.tic();
 
-	// Defining a rotation matrix and translation vector
-	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
-
-	//tools->transformation(*source_cloud2_registration, *cloud_icp, transformation_matrix);
-	transformation(transformation_matrix);
-
 	pcl::IterativeClosestPoint<PointT, PointT> icp;
 	icp.setMaximumIterations(iterations);
 	icp.setInputSource(cloud_icp);
-	icp.setInputTarget(source_cloud1_registration);
+	icp.setInputTarget(target_cloud_registration);
 	icp.align(*cloud_icp);
 	icp.setMaximumIterations(1);  // We set this variable to 1 for the next time we will call .align () function
 	std::cout << "Applied " << iterations << " ICP iteration(s) in " << time.toc() << " ms" << std::endl;
@@ -240,8 +372,8 @@ void MainWindow::on_registrationAction_triggered()
 	{
 		std::cout << "\nICP has converged, score is " << icp.getFitnessScore() << std::endl;
 		std::cout << "\nICP transformation " << iterations << " : cloud_icp -> cloud_in" << std::endl;
-		transformation_matrix = icp.getFinalTransformation().cast<double>();
-		print4x4Matrix(transformation_matrix);
+		//transformation_matrix = icp.getFinalTransformation().cast<double>();
+		//print4x4Matrix(transformation_matrix);
 
 		//update file
 		//tools->savePointCloudFile(cloud_in_1, cloud_icp, iterations);
@@ -253,9 +385,9 @@ void MainWindow::on_registrationAction_triggered()
 		return;
 	}
 	
-	//tools->visualization(source_cloud1_registration, source_cloud2_registration, cloud_tr, cloud_icp, iterations);
+	//tools->visualization(target_cloud_registration, source_cloud_registration, cloud_tr, cloud_icp, iterations);
 	visualization();
-	//tools->savePointCloudFile(source_cloud1_registration, cloud_icp, iterations);
+	//tools->savePointCloudFile(target_cloud_registration, cloud_icp, iterations);
 	savePointCloudFile();
 }
 // 改变背景颜色
@@ -312,16 +444,7 @@ void MainWindow::on_translateToCentroidAction_triggered()
     ui->qvtkWidget->update();
     cout << "done." << endl;
 }
-// 移除NaN点
-void MainWindow::on_removeNanAction_triggered()
-{
-    std::vector<int> indices;
-    PointCloudT::Ptr new_cloud (new PointCloudT);
-    pcl::removeNaNFromPointCloud<pcl::PointXYZ>(*source_cloud, *new_cloud, indices);
-    source_cloud = new_cloud;
 
-    cout << "After nan points been removed, points size =" << source_cloud->size() << endl;
-}
 // 设置平面提取参数
 void MainWindow::on_plane_detect_set_param_Action_triggered()
 {
@@ -1079,19 +1202,4 @@ void MainWindow::on_performLineSegDelAction_triggered()
 void MainWindow::on_loadPolyDataAction_triggered()
 {
 
-}
-// 进行体素滤波
-void MainWindow::on_voxelGridFiltAction_triggered()
-{
-    PointCloudT::Ptr cloud_filtered (new PointCloudT);
-    pcl::VoxelGrid<pcl::PointXYZ> sor;
-    sor.setInputCloud(source_cloud);
-    float delta = 0.01f;
-    sor.setLeafSize(delta, delta, delta);
-    sor.filter(*cloud_filtered);
-    cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
-    source_cloud = cloud_filtered;
-    viewer_cloud.removeAllPointClouds();
-    viewer_cloud.addPointCloud(source_cloud, "source");
-    viewer_cloud.spinOnce();
 }

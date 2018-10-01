@@ -136,11 +136,16 @@ pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_source;
 bool* isProcessed = NULL;
 pcl::PointCloud<pcl::Normal>::Ptr source_normal (new pcl::PointCloud<pcl::Normal>);
 
+//define by czh
 //配准相关变量
-PointCloudT::Ptr source_cloud1_registration(new PointCloudT);
-PointCloudT::Ptr source_cloud2_registration(new PointCloudT);
+PointCloudT::Ptr target_cloud_registration(new PointCloudT);
+PointCloudT::Ptr source_cloud_registration(new PointCloudT);
 PointCloudT::Ptr cloud_tr(new PointCloudT);
 PointCloudT::Ptr cloud_icp(new PointCloudT);
+PointCloudT::Ptr sac_result(new PointCloudT);
+// Defining a rotation matrix and translation vector
+Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+//配准迭代次数
 int iterations = 10;
 
 PointCloudT::Ptr source_cloud_backup (new PointCloudT);
@@ -1098,12 +1103,12 @@ void estimateNormal()
 
 	finish = std::clock();
 	cout << "normal estimation used: " << finish-start << "ms." << endl;
-    viewer_cloud.removePointCloud("source");
-    viewer_cloud.addPointCloud(source_cloud, "source");
-    viewer_cloud.removePointCloud("normal");
-    viewer_cloud.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(
-        source_cloud, source_normal,
-        interval_level, normal_length_for_display, "normal");
+   // viewer_cloud.removePointCloud("source");
+   // viewer_cloud.addPointCloud(source_cloud, "source");
+    //viewer_cloud.removePointCloud("normal");
+   // viewer_cloud.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(
+        //source_cloud, source_normal,
+       // interval_level, normal_length_for_display, "normal");
 }
 // 校正点云法向量
 void regulateNormal()

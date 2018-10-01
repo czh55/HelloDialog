@@ -25,9 +25,18 @@
 #include <pcl\surface\vtk_smoothing\vtk_utils.h>
 #include <pcl/visualization/common/actor_map.h>
 
+
+//define by czh 
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   // TicToc
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/fpfh.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/registration/ia_ransac.h>
 
+
+//define by czh
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 

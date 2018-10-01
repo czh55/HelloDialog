@@ -1,4 +1,4 @@
-[plane_detect]
+[PlaneDetect]
 isConductTranslate=1
 min_dist_between_points=0.001
 r_for_estimate_normal=0.5
