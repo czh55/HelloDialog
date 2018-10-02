@@ -63,7 +63,9 @@ private slots:
 	
 	void on_registrationICPAction_triggered();
 
-	//void on_repairHolesAction_triggered();
+	void on_registrationPlaneAction_triggered();
+
+	void on_repairHolesAction_triggered();
 
     void on_bgColorMenu_triggered();
 

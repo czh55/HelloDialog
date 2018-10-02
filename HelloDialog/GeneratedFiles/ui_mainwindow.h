@@ -377,8 +377,8 @@ public:
         registrationICPAction->setText(QApplication::translate("MainWindow", "\346\211\247\350\241\214ICP\351\205\215\345\207\206", Q_NULLPTR));
         action->setText(QApplication::translate("MainWindow", "\345\257\271\345\275\223\345\211\215\347\202\271\344\272\221\344\275\223\347\264\240\346\273\244\346\263\242", Q_NULLPTR));
         repairHolesAction->setText(QApplication::translate("MainWindow", "\346\217\220\345\217\226\345\255\224\346\264\236\350\276\271\347\274\230", Q_NULLPTR));
-        openFile1RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2661", Q_NULLPTR));
-        openFile2RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662", Q_NULLPTR));
+        openFile1RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2661_target", Q_NULLPTR));
+        openFile2RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662_source", Q_NULLPTR));
         registrationSACAction->setText(QApplication::translate("MainWindow", "SAC\347\262\227\351\205\215\345\207\206", Q_NULLPTR));
         rotatePointCloudAction->setText(QApplication::translate("MainWindow", "\346\227\213\350\275\254\347\202\271\344\272\221", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));

@@ -390,6 +390,18 @@ void MainWindow::on_registrationICPAction_triggered()
 	//tools->savePointCloudFile(target_cloud_registration, cloud_icp, iterations);
 	savePointCloudFile();
 }
+
+//define by czh
+//基于平面的配准
+void on_registrationPlaneAction_triggered() {
+
+}
+//define by czh
+//孔洞修复
+//输入数据
+void MainWindow::on_repairHolesAction_triggered() {
+
+}
 // 改变背景颜色
 void MainWindow::on_bgColorMenu_triggered()
 {

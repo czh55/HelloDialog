@@ -26,7 +26,7 @@
 #include <pcl/visualization/common/actor_map.h>
 
 
-//define by czh 
+//define by czh  用于sac和ICP的配准
 #include <pcl/registration/icp.h>
 #include <pcl/console/time.h>   // TicToc
 #include <pcl/features/normal_3d.h>
@@ -34,11 +34,15 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/registration/ia_ransac.h>
-
-
+//define by czh 用于基于平面的配准
+#include <vector>
+#include <pcl/registration/transformation_estimation_svd.h>
 //define by czh
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
+
+using namespace std;
+
 
 //typedef pcl::PointXYZRGB PointT;
 const int ARGU_BUFFER_SIZE = 256;		// 参数缓冲区大小
