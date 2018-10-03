@@ -108,6 +108,10 @@ void MainWindow::on_removeNanAction_triggered()
 	pcl::removeNaNFromPointCloud(*target_cloud_registration, *target_cloud_registration, indices_tgt);
 	std::cout << "remove *target_cloud_registration nan" << endl;
 
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud_registration, "source");
+	ui->qvtkWidget->update();
+
 	//变量转换器
 	verb_transform(source_cloud_registration, cloud_result);
 }
@@ -147,6 +151,11 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 	voxel_grid_2.filter(*target_cloud_registration);
 	std::cout << "down size *cloud_tgt_o.pcd from " << pointCloud_num2 << "to" << target_cloud_registration->size() << endl;
 
+	//直接显示在主界面
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud_registration, "source");
+	ui->qvtkWidget->update();
+
 	//变量转换器
 	verb_transform(source_cloud_registration, cloud_result);
 }
@@ -163,6 +172,11 @@ void MainWindow::on_rotatePointCloudAction_triggered() {
 
 	//tools->transformation(*source_cloud_registration, *cloud_icp, transformation_matrix);
 	transformation(*source_cloud_registration, *cloud_tr);
+
+	//直接显示在主界面
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(cloud_tr, "source");
+	ui->qvtkWidget->update();
 
 	//变量转换器
 	verb_transform(cloud_tr, cloud_result);
@@ -231,8 +245,13 @@ void MainWindow::on_registrationSACAction_triggered() {
 	std::cout << sac_trans << endl;
 	clock_t sac_time = clock();
 	std::cout << "SAC done" << endl;
-	//显示SAC效果
+	//新建页面显示SAC效果
 	visualization(target_cloud_registration, cloud_tr, cloud_sac);
+
+	//直接显示SAC效果-单点云
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(cloud_sac, "source");
+	ui->qvtkWidget->update();
 
 	//变量转换器
 	verb_transform(cloud_sac, cloud_result);
@@ -277,18 +296,58 @@ void MainWindow::on_registrationICPAction_triggered()
 		return;
 	}
 	
-	//tools->visualization(target_cloud_registration, source_cloud_registration, cloud_tr, cloud_icp, iterations);
+	//双通道显示点云
 	visualization(target_cloud_registration, cloud_tr, cloud_icp);
-	//tools->savePointCloudFile(target_cloud_registration, cloud_icp, iterations);
+	//保存点云
 	savePointCloudFile(target_cloud_registration, cloud_icp, "icp-run"+iterations);
+	
+	//直接显示SAC效果-单点云
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(cloud_icp, "source");
+	ui->qvtkWidget->update();
 
 	//变量转换器
 	verb_transform(cloud_icp, cloud_result);
 }
 
 //define by czh
-//基于平面的配准
+/*基于平面的配准
+平面配准同样使用了变量转换器，只不过是写了第一个和最后一个函数的内部！
+*/
 void MainWindow::on_registrationPlaneAction_triggered() {
+	/*在执行平面配准时，要事先求得当前输入的两个点云的平面数据*.pcd *.txt
+	*其实下面三个函数都是对PlaneDetect.h中函数的组合使用而已。
+	*/
+
+	/*原程序对全局变量source_cloud的平面提取*/
+	//临时保存source_cloud到temp_cloud，使用完之后，再恢复
+	PointCloudT::Ptr temp_cloud(new PointCloudT);
+	*temp_cloud = *source_cloud;
+	//将source_cloud赋值为source_cloud_registration
+	*source_cloud = *source_cloud_registration;
+	//为平面提取加载参数
+	on_load_param_action_triggered();
+	//估计法向量
+	on_normalEstimateAction_triggered();
+	//自动执行
+	on_autoPerformAction_triggered();
+	//保存多边形数据
+	on_savePolyDataAction_triggered();
+
+	//将source_cloud赋值为source_cloud_registration
+	*source_cloud = *target_cloud_registration;
+	//为平面提取加载参数
+	on_load_param_action_triggered();
+	//估计法向量
+	on_normalEstimateAction_triggered();
+	//自动执行
+	on_autoPerformAction_triggered();
+	//保存多边形数据
+	on_savePolyDataAction_triggered();
+
+	//恢复source_cloud
+	*source_cloud = *temp_cloud;
+
 	start = std::clock();
 	cout << "auto run......." << endl;
 	loadpolygon();
@@ -305,7 +364,6 @@ void MainWindow::on_registrationPlaneAction_triggered() {
 	finish = std::clock();
 	cout << "finally cost " << finish - start << " ms." << endl;
 	memset(state, 0, CMD_SIZE);
-	
 }
 //define by czh
 //孔洞修复

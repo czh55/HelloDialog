@@ -316,7 +316,6 @@ void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::s
 }
 
 
-
 //define by czh ***********************************************************************************************************
 //配准相关变量
 PointCloudT::Ptr target_cloud_registration(new PointCloudT);
@@ -325,9 +324,16 @@ PointCloudT::Ptr cloud_tr(new PointCloudT);
 PointCloudT::Ptr cloud_icp(new PointCloudT);
 PointCloudT::Ptr cloud_sac(new PointCloudT);
 
-
 //配准迭代次数
 int iterations = 10;
+
+
+//define by czh
+//用于配置平面配准输入文件的文件名
+#define PLANE_REGISTRATION_PATH_pcd1 "3DReconstruction/cloud1.pcd"
+#define PLANE_REGISTRATION_PATH_pcd2 "3DReconstruction/cloud2.pcd"
+#define PLANE_REGISTRATION_PATH_txt1 "3DReconstruction/cloud1.pcd.txt"
+#define PLANE_REGISTRATION_PATH_txt2 "3DReconstruction/cloud2.pcd.txt"
 
 #define max(a,b)((a>b)?b:a)
 #define min(a,b)((a<b)?b:a)
@@ -415,6 +421,11 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void*
 /*加载目标、源点云以及相关平面多边形;*/
 void loadpolygon()																					//加载点云;
 {
+	//变量转换器
+	verb_transform(source_cloud_registration, source_cloud_plane_registration);
+	//变量转换器
+	verb_transform(target_cloud_registration, target_cloud_plane_registration);
+
 	cout << "please wait, the polygon is loading..." << endl;										//加载多边形开始，首先从源点云开始;
 
 	source_cloud_border_plane_registration->clear();                                                                   //初始化;
@@ -431,16 +442,19 @@ void loadpolygon()																					//加载点云;
 	vector<int> target;
 	vector<int>::iterator it;
 
-	pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/source_cloud_plane_registration.pcd", *source_cloud_plane_registration);
-	pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/target_cloud_plane_registration.pcd", *target_cloud_plane_registration);
+	//change by czh
+	//pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/source_cloud_plane_registration.pcd", *source_cloud_plane_registration);
+	//pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/target_cloud_plane_registration.pcd", *target_cloud_plane_registration);
+	
 	*source_cloud_backup_plane_registration = *source_cloud_plane_registration;
 
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/source_plane_registration.pcd", *source_cloud_border_plane_registration) == -1)              //读源多边形;
+
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(PLANE_REGISTRATION_PATH_pcd1, *source_cloud_border_plane_registration) == -1)              //读源多边形;
 	{
 		PCL_ERROR("Couldn't read file source.pcd \n");
 		return;
 	}
-	ifstream file("dataForPlane/source_plane_registration.txt");
+	ifstream file(PLANE_REGISTRATION_PATH_txt1);
 	while (1)
 	{
 		file >> num;
@@ -472,12 +486,12 @@ void loadpolygon()																					//加载点云;
 	}
 	cout << "load source polygon success, total has " << source_polygon.size() << "polygon" << endl;
 
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/target_plane_registration.pcd", *target_cloud_border_plane_registration) == -1)
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>(PLANE_REGISTRATION_PATH_pcd2, *target_cloud_border_plane_registration) == -1)
 	{
 		PCL_ERROR("Couldn't read file target.pcd \n");
 		return;
 	}
-	ifstream file1("dataForPlane/target_plane_registration.txt");
+	ifstream file1(PLANE_REGISTRATION_PATH_txt2);
 
 	sum = 0;
 	i = 0;
