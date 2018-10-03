@@ -13,7 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -78,9 +78,9 @@ public:
     QAction *openFile2RegistrationAction;
     QAction *registrationSACAction;
     QAction *rotatePointCloudAction;
+    QAction *registrationPlaneAction;
     QWidget *centralWidget;
-    QWidget *gridLayoutWidget;
-    QGridLayout *gridLayout;
+    QHBoxLayout *horizontalLayout;
     QVTKWidget *qvtkWidget;
     QMenuBar *menuBar;
     QMenu *fileMenu;
@@ -103,7 +103,9 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(600, 400);
+        MainWindow->resize(600, 424);
+        MainWindow->setLayoutDirection(Qt::LeftToRight);
+        MainWindow->setAutoFillBackground(true);
         actionfile = new QAction(MainWindow);
         actionfile->setObjectName(QStringLiteral("actionfile"));
         openFileAction = new QAction(MainWindow);
@@ -204,20 +206,21 @@ public:
         registrationSACAction->setObjectName(QStringLiteral("registrationSACAction"));
         rotatePointCloudAction = new QAction(MainWindow);
         rotatePointCloudAction->setObjectName(QStringLiteral("rotatePointCloudAction"));
+        registrationPlaneAction = new QAction(MainWindow);
+        registrationPlaneAction->setObjectName(QStringLiteral("registrationPlaneAction"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        gridLayoutWidget = new QWidget(centralWidget);
-        gridLayoutWidget->setObjectName(QStringLiteral("gridLayoutWidget"));
-        gridLayoutWidget->setGeometry(QRect(0, -10, 601, 361));
-        gridLayout = new QGridLayout(gridLayoutWidget);
-        gridLayout->setSpacing(6);
-        gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        gridLayout->setContentsMargins(0, 0, 0, 0);
-        qvtkWidget = new QVTKWidget(gridLayoutWidget);
+        centralWidget->setLayoutDirection(Qt::LeftToRight);
+        centralWidget->setAutoFillBackground(true);
+        horizontalLayout = new QHBoxLayout(centralWidget);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        qvtkWidget = new QVTKWidget(centralWidget);
         qvtkWidget->setObjectName(QStringLiteral("qvtkWidget"));
+        qvtkWidget->setLayoutDirection(Qt::LeftToRight);
 
-        gridLayout->addWidget(qvtkWidget, 0, 0, 1, 1);
+        horizontalLayout->addWidget(qvtkWidget);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -319,8 +322,11 @@ public:
         delLineSegMenu->addAction(switchLineSegAction);
         delLineSegMenu->addAction(performLineSegDelAction);
         registrationMenu->addAction(rotatePointCloudAction);
+        registrationMenu->addSeparator();
         registrationMenu->addAction(registrationSACAction);
         registrationMenu->addAction(registrationICPAction);
+        registrationMenu->addSeparator();
+        registrationMenu->addAction(registrationPlaneAction);
         repairHolesMenu->addAction(repairHolesAction);
 
         retranslateUi(MainWindow);
@@ -381,6 +387,7 @@ public:
         openFile2RegistrationAction->setText(QApplication::translate("MainWindow", "\351\205\215\345\207\206\347\202\271\344\272\221\346\226\207\344\273\2662_source", Q_NULLPTR));
         registrationSACAction->setText(QApplication::translate("MainWindow", "SAC\347\262\227\351\205\215\345\207\206", Q_NULLPTR));
         rotatePointCloudAction->setText(QApplication::translate("MainWindow", "\346\227\213\350\275\254\347\202\271\344\272\221", Q_NULLPTR));
+        registrationPlaneAction->setText(QApplication::translate("MainWindow", "\345\237\272\344\272\216\345\271\263\351\235\242\351\205\215\345\207\206", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));

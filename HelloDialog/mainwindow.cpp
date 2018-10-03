@@ -393,8 +393,23 @@ void MainWindow::on_registrationICPAction_triggered()
 
 //define by czh
 //基于平面的配准
-void on_registrationPlaneAction_triggered() {
-
+void MainWindow::on_registrationPlaneAction_triggered() {
+	start = std::clock();
+	cout << "auto run......." << endl;
+	loadpolygon();
+	while (source_index < source_polygon.size())
+	{
+		FindSimilarPoly();
+		cout << "match continue..." << endl;
+		source_index++;
+		IsMatch = false;
+	}
+	registration();
+	registration_cloud();
+	//icp();
+	finish = std::clock();
+	cout << "finally cost " << finish - start << " ms." << endl;
+	memset(state, 0, CMD_SIZE);
 }
 //define by czh
 //孔洞修复

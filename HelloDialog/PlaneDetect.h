@@ -136,6 +136,20 @@ pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_source;
 bool* isProcessed = NULL;
 pcl::PointCloud<pcl::Normal>::Ptr source_normal (new pcl::PointCloud<pcl::Normal>);
 
+PointCloudT::Ptr source_cloud_backup(new PointCloudT);
+pcl::PointCloud<pcl::Normal>::Ptr source_normal_backup(new pcl::PointCloud<pcl::Normal>);
+bool isFirstLoop = true;
+
+// viewer instances
+pcl::visualization::PCLVisualizer viewer_ps;		// display param space
+pcl::visualization::PCLVisualizer viewer_cloud;		// display point clouds
+
+// 命令行
+const int CMD_SIZE = 64;
+char cmd[CMD_SIZE];
+char state[CMD_SIZE];
+
+DWORD dwThread;
 
 //define by czh ***********************************************************************************************************
 //配准相关变量
@@ -189,8 +203,9 @@ My_Polygon P_poly;																					//公共部分多边形;
 std::vector<My_Polygon> source_polygon;																	//源多边形集合;
 std::vector<My_Polygon> target_polygon;																	//目标多边形集合;
 
-clock_t start;																						//时钟;
-clock_t finish;
+//重定义
+//clock_t start;																						//时钟;
+//clock_t finish;
 
 const float sigma = 0.85;																			//匹配概率;
 const int vertex_diff = 20;																			//定点差异;   
@@ -204,12 +219,13 @@ std::vector<int> T_final_index;
 
 bool IsMatch = false;																				//判定匹配是否成功;
 
-const int CMD_SIZE = 64;
-char cmd[CMD_SIZE];
-char state[CMD_SIZE];
+//重定义
+//const int CMD_SIZE = 64;
+//char cmd[CMD_SIZE];
+//char state[CMD_SIZE];
+//DWORD dwThread;
 
 DWORD WINAPI cmdFunc(LPVOID);
-DWORD dwThread;
 HANDLE dispaly_thread;
 
 //define by czh /***************************************************************************************************************************************/
@@ -254,7 +270,7 @@ void loadpolygon()																					//加载点云;
 	pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/target_cloud_plane_registration.pcd", *target_cloud_plane_registration);
 	*source_cloud_backup_plane_registration = *source_cloud_plane_registration;
 
-	if (pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/source.pcd_plane_registration", *source_cloud_border_plane_registration) == -1)              //读源多边形;
+	if (pcl::io::loadPCDFile<pcl::PointXYZ>("dataForPlane/source_plane_registration.pcd", *source_cloud_border_plane_registration) == -1)              //读源多边形;
 	{
 		PCL_ERROR("Couldn't read file source.pcd \n");
 		return;
@@ -768,9 +784,9 @@ void registration()
 	pcl::registration::TransformationEstimationSVD<pcl::PointXYZ, pcl::PointXYZ>SVD;
 	SVD.estimateRigidTransformation(*S_center, *T_center, transformation_matrix_plane_registration);
 
-	pcl::transformPointCloud(*source_cloud_border_plane_registration, *output, transformation_matrix);
+	pcl::transformPointCloud(*source_cloud_border_plane_registration, *output, transformation_matrix_plane_registration);
 	cout << "transformation_matrix : " << endl;
-	cout << transformation_matrix << endl;
+	cout << transformation_matrix_plane_registration << endl;
 
 	viewer_cloud.removeAllPointClouds();
 	viewer_cloud.addPointCloud(output, "source");
@@ -785,7 +801,7 @@ void registration_cloud()
 	pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
 
 	cout << "Now,let's begin to registration! please wait a moment..." << endl;
-	pcl::transformPointCloud(*source_cloud_plane_registration, *output, transformation_matrix);
+	pcl::transformPointCloud(*source_cloud_plane_registration, *output, transformation_matrix_plane_registration);
 	*source_cloud_plane_registration = *output;
 
 
@@ -799,18 +815,10 @@ void registration_cloud()
 }
 /***************************************************************************************************************************************/
 
-PointCloudT::Ptr source_cloud_backup (new PointCloudT);
-pcl::PointCloud<pcl::Normal>::Ptr source_normal_backup (new pcl::PointCloud<pcl::Normal>);
-bool isFirstLoop = true;
 
-// viewer instances
-pcl::visualization::PCLVisualizer viewer_ps;		// display param space
-pcl::visualization::PCLVisualizer viewer_cloud;		// display point clouds
+
 ///////////////////////////////////////////////////////////////////////////////
-// 命令行
-const int CMD_SIZE = 64;
-char cmd[CMD_SIZE];
-char state[CMD_SIZE];
+
 DWORD WINAPI cmdFunc(LPVOID);
 // 从配置文件中加载各项参数
 void loadParam();
@@ -903,7 +911,7 @@ void keyboardEventOccurred_cloud (const pcl::visualization::KeyboardEvent &event
 void processStateMsg();
 
 HANDLE display_thread;
-DWORD dwThread;
+
 /*void main()
 {
 	srand(time(0));

@@ -7,28 +7,34 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>400</height>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>-10</y>
-      <width>601</width>
-      <height>361</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QVTKWidget" name="qvtkWidget"/>
-     </item>
-    </layout>
-   </widget>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QVTKWidget" name="qvtkWidget">
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -153,8 +159,11 @@
      <string>配准</string>
     </property>
     <addaction name="rotatePointCloudAction"/>
+    <addaction name="separator"/>
     <addaction name="registrationSACAction"/>
     <addaction name="registrationICPAction"/>
+    <addaction name="separator"/>
+    <addaction name="registrationPlaneAction"/>
    </widget>
    <widget class="QMenu" name="repairHolesMenu">
     <property name="title">
@@ -427,6 +436,11 @@
   <action name="rotatePointCloudAction">
    <property name="text">
     <string>旋转点云</string>
+   </property>
+  </action>
+  <action name="registrationPlaneAction">
+   <property name="text">
+    <string>基于平面配准</string>
    </property>
   </action>
  </widget>
