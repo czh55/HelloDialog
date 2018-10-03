@@ -177,7 +177,6 @@ void MainWindow::savePointCloudFile() {
 
 }
 
-
 // 打开文件
 void MainWindow::on_openFileAction_triggered()
 {
@@ -213,7 +212,12 @@ void MainWindow::on_openFile2RegistrationAction_triggered()
 	viewer_cloud.removePointCloud("source");
 	viewer_cloud.addPointCloud(source_cloud_registration, "source");
 	ui->qvtkWidget->update();
+
+	//变量转换器
+	verb_transform(source_cloud_registration, cloud_result);
 }
+
+//*******************************************开始：移除NAN点和体素滤波直接覆盖原点云对象*********************************************************************
 
 //define by czh
 // 移除NaN点
@@ -273,9 +277,10 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 	PointCloudT::Ptr cloud_tgt(new PointCloudT);
 	voxel_grid_2.filter(*target_cloud_registration);
 	std::cout << "down size *cloud_tgt_o.pcd from " << pointCloud_num2 << "to" << target_cloud_registration->size() << endl;
-	
-
 }
+
+//*******************************************结束：移除NAN点和体素滤波直接覆盖原点云对象*********************************************************************
+
 //define by czh
 //旋转原点云
 //输入数据：source_cloud_registration
@@ -283,7 +288,9 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 void MainWindow::on_rotatePointCloudAction_triggered() {
 
 	//tools->transformation(*source_cloud_registration, *cloud_icp, transformation_matrix);
-	transformation();
+	transformation(source_cloud_registration, cloud_tr);
+
+	
 }
 //define by czh 
 //SAC配准

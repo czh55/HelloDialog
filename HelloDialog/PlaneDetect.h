@@ -151,15 +151,178 @@ char state[CMD_SIZE];
 
 DWORD dwThread;
 
+//define by czh 
+//作为每一个功能的输入和输出
+PointCloudT::Ptr cloud_result(new PointCloudT);
+
+//define by czh
+//每个功能，执行前和执行后的变量转换器
+void verb_transform(PointCloudT::Ptr give, PointCloudT::Ptr get) {
+	get = give;
+}
+
+//define by czh
+/**
+输出变换矩阵
+*/
+void print4x4Matrix(const Eigen::Matrix4d & matrix)
+{
+	printf("Rotation matrix :\n");
+	printf("    | %6.3f %6.3f %6.3f | \n", matrix(0, 0), matrix(0, 1), matrix(0, 2));
+	printf("R = | %6.3f %6.3f %6.3f | \n", matrix(1, 0), matrix(1, 1), matrix(1, 2));
+	printf("    | %6.3f %6.3f %6.3f | \n", matrix(2, 0), matrix(2, 1), matrix(2, 2));
+	printf("Translation vector :\n");
+	printf("t = < %6.3f, %6.3f, %6.3f >\n\n", matrix(0, 3), matrix(1, 3), matrix(2, 3));
+}
+/**
+旋转点云：默认的旋转是π/8
+参数：
+1.cloud_origin 需要旋转的点云
+2.cloud_target 旋转的结果
+*/
+void transformation(const PointCloudT &cloud_origin, PointCloudT &cloud_target) {
+	// Defining a rotation matrix and translation vector
+	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+
+	// A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
+	double theta = M_PI / 8;  // The angle of rotation in radians
+	transformation_matrix(0, 0) = cos(theta);
+	transformation_matrix(0, 1) = -sin(theta);
+	transformation_matrix(1, 0) = sin(theta);
+	transformation_matrix(1, 1) = cos(theta);
+
+	// A translation on Z axis (0.4 meters)
+	transformation_matrix(2, 3) = 0.4;
+
+	// Display in terminal the transformation matrix
+	std::cout << "Applying this rigid transformation to: cloud_in -> cloud_icp" << std::endl;
+	print4x4Matrix(transformation_matrix);
+
+	// Executing the transformation
+	pcl::transformPointCloud(cloud_origin, cloud_target, transformation_matrix);
+
+}
+
+/**
+双通道显示：
+参数：
+1.cloud_double 两个通道全都显示 白色
+2.cloud_left 仅显示在左边通道 绿色
+3.cloud_right 仅显示在右边通道 红色
+*/
+void visualization(PointCloudT::Ptr cloud_double, PointCloudT::Ptr cloud_left, PointCloudT::Ptr cloud_right)
+{
+	// Visualization
+	pcl::visualization::PCLVisualizer viewer("ICP demo");
+	// Create two vertically separated viewports
+	int v1(0);
+	int v2(1);
+	viewer.createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+	viewer.createViewPort(0.5, 0.0, 1.0, 1.0, v2);
+
+	// The color we will be using
+	float bckgr_gray_level = 0.0;  // Black
+	float txt_gray_lvl = 1.0 - bckgr_gray_level;
+
+	// Original point cloud is white
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_double_color_h(cloud_double, (int)255 * txt_gray_lvl, (int)255 * txt_gray_lvl,
+		(int)255 * txt_gray_lvl);
+	viewer.addPointCloud(cloud_double, cloud_double_color_h, "target_cloud_registration_v1", v1);
+	viewer.addPointCloud(cloud_double, cloud_double_color_h, "target_cloud_registration_v2", v2);
+
+	// Transformed point cloud is green
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_left_color_h(cloud_left, 20, 180, 20);
+	viewer.addPointCloud(cloud_left, cloud_left_color_h, "cloud_tr_v1", v1);
+
+	// ICP aligned point cloud is red
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_right_color_h(cloud_icp, 180, 20, 20);
+	viewer.addPointCloud(cloud_right, cloud_right_color_h, "cloud_icp_v2", v2);
+
+	// Orginal point cloud is blue
+	//pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_all_color_h(cloud_in_all, 0, 191, 255);
+	//viewer.addPointCloud(cloud_in_all, cloud_all_color_h, "cloud_all_v2", v2);
+
+	// Adding text descriptions in each viewport
+	viewer.addText("White: Original point cloud\nGreen: Matrix transformed point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_1", v1);
+	viewer.addText("White: Original point cloud\nRed: ICP aligned point cloud", 10, 15, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "icp_info_2", v2);
+
+	/*std::stringstream ss;
+	ss << iterations;
+	std::string iterations_cnt = "ICP iterations = " + ss.str();
+	viewer.addText(iterations_cnt, 10, 60, 16, txt_gray_lvl, txt_gray_lvl, txt_gray_lvl, "iterations_cnt", v2);*/
+
+	// Set background color
+	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level, v1);
+	viewer.setBackgroundColor(bckgr_gray_level, bckgr_gray_level, bckgr_gray_level, v2);
+
+	// Set camera position and orientation
+	viewer.setCameraPosition(-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
+	viewer.setSize(1280, 1024);  // Visualiser window size
+
+								 // Display the visualiser
+	while (!viewer.wasStopped())
+	{
+		viewer.spinOnce();
+	}
+}
+
+/**
+保存文件：
+参数：
+1.点云1
+2.点云2
+3.要生成的文件名
+*/
+void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::string fileName) {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	for (int j = 0; j < cloud1->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = cloud1->points[j].x;
+		p.y = cloud1->points[j].y;
+		p.z = cloud1->points[j].z;
+		p.r = 255;//红色
+		p.g = 0;
+		p.b = 0;
+		mergeCloud->points.push_back(p);
+	}
+
+	for (int j = 0; j < cloud2->points.size(); j += 1)
+	{
+		pcl::PointXYZRGB p;
+		p.x = cloud2->points[j].x;
+		p.y = cloud2->points[j].y;
+		p.z = cloud2->points[j].z;
+		p.r = 20;//绿色
+		p.g = 180;
+		p.b = 20;
+		mergeCloud->points.push_back(p);
+	}
+	// 设置并保存点云
+	mergeCloud->height = 1;
+	mergeCloud->width = mergeCloud->points.size();
+	mergeCloud->is_dense = false;
+
+	pcl::io::savePCDFile(fileName, *mergeCloud);
+
+	// 清除数据并退出
+	mergeCloud->points.clear();
+	std::cout << "已保存为" << fileName << std::endl;
+
+}
+
+
+
 //define by czh ***********************************************************************************************************
 //配准相关变量
 PointCloudT::Ptr target_cloud_registration(new PointCloudT);
 PointCloudT::Ptr source_cloud_registration(new PointCloudT);
 PointCloudT::Ptr cloud_tr(new PointCloudT);
 PointCloudT::Ptr cloud_icp(new PointCloudT);
-PointCloudT::Ptr sac_result(new PointCloudT);
-// Defining a rotation matrix and translation vector
-Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
+PointCloudT::Ptr cloud_sac(new PointCloudT);
+
+
 //配准迭代次数
 int iterations = 10;
 
@@ -177,10 +340,10 @@ struct My_Polygon
 /*
 将大师兄用的基于平面的配准方法更改部分，以结合到当前程序
 将source_cloud_border 更名为 source_cloud_border_plane_registration
-将target_cloud_border 更名为target_cloud_border_plane_registration
+将target_cloud_border 更名为 target_cloud_border_plane_registration
 将source_cloud 更名为 source_cloud_plane_registration
 将target_cloud 更名为 target_cloud_plane_registration
-将source_cloud_backup source_cloud_backup_plane_registration
+将source_cloud_backup 更名为 source_cloud_backup_plane_registration
 */
 /*全局函数和变量;*/
 pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud_border_plane_registration(new pcl::PointCloud<pcl::PointXYZ>);        //源点云平面边界;
@@ -188,7 +351,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr target_cloud_border_plane_registration(new p
 pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud_plane_registration(new pcl::PointCloud<pcl::PointXYZ>);				//源点云;
 pcl::PointCloud<pcl::PointXYZ>::Ptr target_cloud_plane_registration(new pcl::PointCloud<pcl::PointXYZ>);				//目标点云;
 pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud_backup_plane_registration(new pcl::PointCloud<pcl::PointXYZ>);
-pcl::PointCloud<pcl::PointXYZ>::Ptr reg_result(new pcl::PointCloud<pcl::PointXYZ>);
 
 Eigen::Matrix4f transformation_matrix_plane_registration; //变换矩阵;
 
