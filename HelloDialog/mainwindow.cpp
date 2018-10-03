@@ -98,7 +98,9 @@ void MainWindow::on_removeNanAction_triggered()
 
 	cout << "After nan points been removed, points size =" << source_cloud->size() << endl;*/
 
-	//define by czh
+	//变量转换器
+	verb_transform(cloud_result, source_cloud_registration);
+	
 	//去除NAN点 source_cloud_registration
 	std::vector<int> indices_src; //保存去除的点的索引
 	pcl::removeNaNFromPointCloud(*source_cloud_registration, *source_cloud_registration, indices_src);
@@ -115,6 +117,46 @@ void MainWindow::on_removeNanAction_triggered()
 	//变量转换器
 	verb_transform(source_cloud_registration, cloud_result);
 }
+
+//define by czh
+/*
+将两个点云进行合并后的滤波
+*/
+void MainWindow::on_voxelGridFiltMergeCloudAction_triggered() {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+	PointCloudT::Ptr cloud_merge(new PointCloudT);
+
+	//变量转换器
+	//verb_transform(cloud_result, cloud_result);
+
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
+
+	//合并两个点云
+	mergePointCloud(target_cloud_registration, cloud_result, mergeCloud);
+
+	//将 PointXYZRGB to PointXYZ
+	xyzrgbTransformxyz(mergeCloud, cloud_merge);
+
+	//下采样滤波 source_cloud_registration
+	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
+	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
+	voxel_grid.setInputCloud(cloud_merge);
+	int pointCloud_num1 = mergeCloud->size();
+	PointCloudT::Ptr cloud_tr(new PointCloudT);
+	voxel_grid.filter(*cloud_merge);
+	std::cout << "down size *cloud_tr_o from " << pointCloud_num1 << "to" << cloud_merge->size() << endl;
+
+	//显示点云
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(cloud_merge, "source");
+
+	//将局部变量cloud_merge赋值给全局source_cloud，进行平面提取
+	*source_cloud = *cloud_merge;
+	
+}
+
+
 //define by czh
 // 进行体素滤波
 //输入变量：source_cloud_registration  target_cloud_registration
@@ -133,7 +175,12 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 	viewer_cloud.addPointCloud(source_cloud, "source");
 	viewer_cloud.spinOnce();*/
 	
-	
+	//变量转换器
+	verb_transform(cloud_result, source_cloud_registration);
+
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
+
 	//下采样滤波 source_cloud_registration
 	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
 	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
@@ -170,6 +217,9 @@ void MainWindow::on_rotatePointCloudAction_triggered() {
 	//变量转换器
 	verb_transform(cloud_result, source_cloud_registration);
 
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
+
 	//tools->transformation(*source_cloud_registration, *cloud_icp, transformation_matrix);
 	transformation(*source_cloud_registration, *cloud_tr);
 
@@ -188,6 +238,9 @@ void MainWindow::on_rotatePointCloudAction_triggered() {
 void MainWindow::on_registrationSACAction_triggered() {
 	//变量转换器
 	verb_transform(cloud_result, cloud_sac);
+
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
 
 	//计算表面法线1
 	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne_src;
@@ -249,8 +302,10 @@ void MainWindow::on_registrationSACAction_triggered() {
 	visualization(target_cloud_registration, cloud_tr, cloud_sac);
 
 	//直接显示SAC效果-单点云
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+	mergePointCloud(target_cloud_registration, cloud_sac, mergeCloud);
 	viewer_cloud.removePointCloud("source");
-	viewer_cloud.addPointCloud(cloud_sac, "source");
+	viewer_cloud.addPointCloud(mergeCloud, "source");
 	ui->qvtkWidget->update();
 
 	//变量转换器
@@ -266,6 +321,9 @@ void MainWindow::on_registrationICPAction_triggered()
 {
 	//变量转换器
 	verb_transform(cloud_result, cloud_icp);
+
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
 
 	pcl::console::TicToc time;
 	time.tic();
@@ -301,9 +359,11 @@ void MainWindow::on_registrationICPAction_triggered()
 	//保存点云
 	savePointCloudFile(target_cloud_registration, cloud_icp, "icp-run"+iterations);
 	
-	//直接显示SAC效果-单点云
+	//直接显示ICP效果-单点云
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+	mergePointCloud(target_cloud_registration, cloud_icp, mergeCloud);
 	viewer_cloud.removePointCloud("source");
-	viewer_cloud.addPointCloud(cloud_icp, "source");
+	viewer_cloud.addPointCloud(mergeCloud, "source");
 	ui->qvtkWidget->update();
 
 	//变量转换器
@@ -315,6 +375,9 @@ void MainWindow::on_registrationICPAction_triggered()
 平面配准同样使用了变量转换器，只不过是写了第一个和最后一个函数的内部！
 */
 void MainWindow::on_registrationPlaneAction_triggered() {
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
+
 	/*在执行平面配准时，要事先求得当前输入的两个点云的平面数据*.pcd *.txt
 	*其实下面三个函数都是对PlaneDetect.h中函数的组合使用而已。
 	*/

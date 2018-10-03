@@ -67,11 +67,14 @@
     <property name="title">
      <string>点云预处理</string>
     </property>
-    <addaction name="removeNanAction"/>
     <addaction name="removeRedundantPointsAction"/>
     <addaction name="translateToCentroidAction"/>
     <addaction name="regulateCoorAction"/>
+    <addaction name="separator"/>
+    <addaction name="removeNanAction"/>
     <addaction name="voxelGridFiltAction"/>
+    <addaction name="separator"/>
+    <addaction name="voxelGridFiltMergeCloudAction"/>
    </widget>
    <widget class="QMenu" name="param_set_menu">
     <property name="title">
@@ -225,7 +228,7 @@
   </action>
   <action name="removeNanAction">
    <property name="text">
-    <string>移除NAN点</string>
+    <string>两点云分别移除NAN点</string>
    </property>
   </action>
   <action name="removeRedundantPointsAction">
@@ -245,7 +248,7 @@
   </action>
   <action name="voxelGridFiltAction">
    <property name="text">
-    <string>体素滤波</string>
+    <string>两点云分别体素滤波</string>
    </property>
   </action>
   <action name="plane_detect_set_param_Action">
@@ -441,6 +444,11 @@
   <action name="registrationPlaneAction">
    <property name="text">
     <string>基于平面配准</string>
+   </property>
+  </action>
+  <action name="voxelGridFiltMergeCloudAction">
+   <property name="text">
+    <string>两点云合并后进行滤波</string>
    </property>
   </action>
  </widget>

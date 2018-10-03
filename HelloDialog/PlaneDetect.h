@@ -266,15 +266,31 @@ void visualization(PointCloudT::Ptr cloud_double, PointCloudT::Ptr cloud_left, P
 	}
 }
 
-/**
-保存文件：
-参数：
-1.点云1
-2.点云2
-3.要生成的文件名
+//define by czh
+/*
+将xyzrgb格式转换为xyz格式的点云
 */
-void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::string fileName) {
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+void xyzrgbTransformxyz(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyzrgb, PointCloudT::Ptr &cloud_xyz) {
+	int M = cloud_xyzrgb->points.size();
+	cout << "input size is:" << M << endl;
+
+	for (int i = 0; i <M; i++)
+	{
+		PointT p;
+		p.x = cloud_xyzrgb->points[i].x;
+		p.y = cloud_xyzrgb->points[i].y;
+		p.z = cloud_xyzrgb->points[i].z;
+		cloud_xyz->points.push_back(p);
+	}
+	cloud_xyz->width = 1;
+	cloud_xyz->height = M;
+}
+
+//define by czh
+/**
+将两个点云进行合并，并返回
+*/
+void  mergePointCloud(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, pcl::PointCloud<pcl::PointXYZRGB>::Ptr &mergeCloud) {
 
 	for (int j = 0; j < cloud1->points.size(); j += 1)
 	{
@@ -303,6 +319,20 @@ void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::s
 	mergeCloud->height = 1;
 	mergeCloud->width = mergeCloud->points.size();
 	mergeCloud->is_dense = false;
+}
+
+/**
+保存文件：
+参数：
+1.点云1
+2.点云2
+3.要生成的文件名
+*/
+void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::string fileName) {
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr mergeCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	//合并连个点云
+	mergePointCloud(cloud1, cloud2, mergeCloud);
 
 	//给文件名加入后缀pcd
 	fileName += ".pcd";
@@ -316,6 +346,7 @@ void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::s
 }
 
 
+
 //define by czh ***********************************************************************************************************
 //配准相关变量
 PointCloudT::Ptr target_cloud_registration(new PointCloudT);
@@ -323,9 +354,11 @@ PointCloudT::Ptr source_cloud_registration(new PointCloudT);
 PointCloudT::Ptr cloud_tr(new PointCloudT);
 PointCloudT::Ptr cloud_icp(new PointCloudT);
 PointCloudT::Ptr cloud_sac(new PointCloudT);
+//PointCloudT::Ptr cloud_merge(new PointCloudT);
+
 
 //配准迭代次数
-int iterations = 10;
+int iterations = 50;
 
 
 //define by czh

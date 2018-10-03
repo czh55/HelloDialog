@@ -43,6 +43,8 @@ private slots:
 	
 	void on_openFile2RegistrationAction_triggered();
 
+	void on_voxelGridFiltMergeCloudAction_triggered();
+
 	void on_rotatePointCloudAction_triggered();
 
 	void on_registrationSACAction_triggered();
