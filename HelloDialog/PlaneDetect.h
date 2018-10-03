@@ -158,7 +158,7 @@ PointCloudT::Ptr cloud_result(new PointCloudT);
 //define by czh
 //每个功能，执行前和执行后的变量转换器
 void verb_transform(PointCloudT::Ptr give, PointCloudT::Ptr get) {
-	get = give;
+	*get = *give;
 }
 
 //define by czh
@@ -235,7 +235,7 @@ void visualization(PointCloudT::Ptr cloud_double, PointCloudT::Ptr cloud_left, P
 	viewer.addPointCloud(cloud_left, cloud_left_color_h, "cloud_tr_v1", v1);
 
 	// ICP aligned point cloud is red
-	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_right_color_h(cloud_icp, 180, 20, 20);
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_right_color_h(cloud_right, 180, 20, 20);
 	viewer.addPointCloud(cloud_right, cloud_right_color_h, "cloud_icp_v2", v2);
 
 	// Orginal point cloud is blue
@@ -303,6 +303,9 @@ void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::s
 	mergeCloud->height = 1;
 	mergeCloud->width = mergeCloud->points.size();
 	mergeCloud->is_dense = false;
+
+	//给文件名加入后缀pcd
+	fileName += ".pcd";
 
 	pcl::io::savePCDFile(fileName, *mergeCloud);
 
@@ -973,7 +976,9 @@ void registration_cloud()
 	viewer_cloud.addPointCloud(target_cloud_plane_registration, "target");
 	viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0, 1.0, 0, "target");
 
-
+	//变量转换器
+	verb_transform(output, cloud_result);
+	verb_transform(target_cloud_plane_registration, target_cloud_registration);
 }
 /***************************************************************************************************************************************/
 

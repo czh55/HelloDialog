@@ -36,20 +36,6 @@ protected:
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-public:
-	//Executing the transformation
-	void transformation();
-	//void transformation(const PointCloudT &souce_cloud, PointCloudT &icp_cloud, Eigen::Matrix4d transformation_matrix);
-
-	void print4x4Matrix(const Eigen::Matrix4d & matrix);
-
-	void visualization();
-	//void visualization(PointCloudT::Ptr target_cloud_registration, PointCloudT::Ptr source_cloud_registration, PointCloudT::Ptr cloud_tr, PointCloudT::Ptr cloud_icp, int iterations);
-
-	void savePointCloudFile();
-	//void savePointCloudFile(PointCloudT::Ptr target_cloud_registration, PointCloudT::Ptr cloud_icp, int iterations);
-
 private slots:
     void on_openFileAction_triggered();
 
