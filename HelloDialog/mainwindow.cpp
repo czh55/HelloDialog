@@ -7,6 +7,7 @@
 #include <QLayout>
 #include <pcl/filters/filter.h>
 #include "PlaneDetect.h"
+#include "Registration.h"
 #include "PlaneDetectSetParamDialog.h"
 #include <QSettings>
 #include <QMessageBox>
@@ -132,6 +133,8 @@ void MainWindow::on_voxelGridFiltMergeCloudAction_triggered() {
 	//清除界面上所有点云
 	viewer_cloud.removeAllPointClouds();
 
+	savePointCloudFile(target_cloud_registration, cloud_result, "double_shadow");
+
 	//合并两个点云
 	mergePointCloud(target_cloud_registration, cloud_result, mergeCloud);
 
@@ -153,7 +156,6 @@ void MainWindow::on_voxelGridFiltMergeCloudAction_triggered() {
 
 	//将局部变量cloud_merge赋值给全局source_cloud，进行平面提取
 	*source_cloud = *cloud_merge;
-	
 }
 
 

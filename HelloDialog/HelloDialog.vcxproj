@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="HeaderFile.h" />
     <ClInclude Include="PlaneDetect.h" />
+    <ClInclude Include="Registration.h" />
     <QtMoc Include="SetPointCloudProDialog.h" />
     <QtMoc Include="SetBGColorDialog.h" />
     <QtMoc Include="RemovePointCloudDialog.h" />

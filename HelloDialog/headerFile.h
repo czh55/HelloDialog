@@ -1,3 +1,6 @@
+#ifndef HEADFILE_H
+#define HEADFILE_H
+
 #include <iostream>
 #include <pcl\io\pcd_io.h>
 #include <pcl\io\io.h>
@@ -43,6 +46,44 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 
 using namespace std;
 
+/******************************************PlaneDetect.h和Registration.h公用部分：为了能使用polygon_transform()******************************************************************/
+// data structures
+struct PSElem
+{
+	std::vector<int> point_indices;
+	int vote;
+	int sink_init;	// create gradient field
+	int sink;		// rectify sink points
+};
+
+struct SinkPoint
+{
+	int index;		// 参数空间中的索引
+	int vote_num;	// total numbers voted for this sink point
+};
+
+struct Triangle
+{
+	pcl::PointXYZ p_a;
+	pcl::PointXYZ p_b;
+	pcl::PointXYZ p_c;
+};
+
+struct Plane
+{
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		PointCloudT::Ptr border;		// 平面的边界点
+	PointCloudT::Ptr points_set;	// 平面点集
+	pcl::ModelCoefficients coeff;					// 平面参数，法向量指向物体外部
+	std::vector<Triangle, Eigen::aligned_allocator<Triangle>> triangles;	// 多边形的三角形面片
+};
+
+// 最终的平面集合
+std::vector<Plane, Eigen::aligned_allocator<Plane>> plane_clouds_final;
+/************************************************************************************************************************************/
+// viewer instances
+pcl::visualization::PCLVisualizer viewer_ps;		// display param space
+pcl::visualization::PCLVisualizer viewer_cloud;		// display point clouds
 
 //typedef pcl::PointXYZRGB PointT;
 const int ARGU_BUFFER_SIZE = 256;		// 参数缓冲区大小
@@ -77,3 +118,5 @@ char* getParameterFromConfigFile(const char *itemName)
 	}
 	return NULL;
 }
+
+#endif  //HEADFILE_H
