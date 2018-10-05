@@ -386,8 +386,8 @@ void MainWindow::on_registrationPlaneAction_triggered() {
 	//临时保存source_cloud到temp_cloud，使用完之后，再恢复
 	PointCloudT::Ptr temp_cloud(new PointCloudT);
 	*temp_cloud = *source_cloud;
-	//将source_cloud赋值为source_cloud_registration
-	*source_cloud = *source_cloud_registration;
+	//变量转换器：将source_cloud赋值为source_cloud_registration
+	verb_transform(source_cloud_registration, source_cloud);
 	//为平面提取加载参数
 	on_load_param_action_triggered();
 	//估计法向量
@@ -395,10 +395,11 @@ void MainWindow::on_registrationPlaneAction_triggered() {
 	//自动执行
 	on_autoPerformAction_triggered();
 	//保存多边形数据
-	on_savePolyDataAction_triggered();
+	//on_savePolyDataAction_triggered();
+	source_polygon = polygon_transform();
 
-	//将source_cloud赋值为source_cloud_registration
-	*source_cloud = *target_cloud_registration;
+	//变量转换器：将source_cloud赋值为target_cloud_registration
+	verb_transform(target_cloud_registration, source_cloud);
 	//为平面提取加载参数
 	on_load_param_action_triggered();
 	//估计法向量
@@ -406,14 +407,15 @@ void MainWindow::on_registrationPlaneAction_triggered() {
 	//自动执行
 	on_autoPerformAction_triggered();
 	//保存多边形数据
-	on_savePolyDataAction_triggered();
+	//on_savePolyDataAction_triggered();
+	target_polygon = polygon_transform();
 
 	//恢复source_cloud
 	*source_cloud = *temp_cloud;
 
 	start = std::clock();
 	cout << "auto run......." << endl;
-	loadpolygon();
+	//loadpolygon();
 	while (source_index < source_polygon.size())
 	{
 		FindSimilarPoly();

@@ -156,10 +156,11 @@ DWORD dwThread;
 PointCloudT::Ptr cloud_result(new PointCloudT);
 
 //define by czh
-//每个功能，执行前和执行后的变量转换器
+//在配准中，每个功能，执行前和执行后的变量转换器
 void verb_transform(PointCloudT::Ptr give, PointCloudT::Ptr get) {
 	*get = *give;
 }
+
 
 //define by czh
 /**
@@ -345,8 +346,6 @@ void savePointCloudFile(PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2, std::s
 
 }
 
-
-
 //define by czh ***********************************************************************************************************
 //配准相关变量
 PointCloudT::Ptr target_cloud_registration(new PointCloudT);
@@ -376,6 +375,7 @@ int iterations = 50;
 struct My_Polygon
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr border;
+	//note by czh :这个变量在平面配准里是没有用，估计是直接抄过来用
 	Eigen::Vector3f normal;
 };
 // define by czh /***************************************************************************************************************************************/
@@ -404,6 +404,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr S_center(new pcl::PointCloud<pcl::PointXYZ>)
 pcl::PointCloud<pcl::PointXYZ>::Ptr T_center(new pcl::PointCloud<pcl::PointXYZ>);
 
 My_Polygon P_poly;																					//公共部分多边形;
+//note by czh: 从*.pcd 和 *.txt中获取数据并重组后的结果，其实就是一个点云的多边形数据
 std::vector<My_Polygon> source_polygon;																	//源多边形集合;
 std::vector<My_Polygon> target_polygon;																	//目标多边形集合;
 
@@ -451,6 +452,23 @@ void registration_cloud();																			//初始点云配准;
 void icp();
 void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void* viewer_void);
 //********************************************************************************************************************************************
+//define by czh
+/*目的：在平面配准中，不需要中间的*.pcd 和*.txt文件，直接通过变量来存储
+这其中涉及到的变量有：
+1.平面提取的最后结果：plane_clouds_final
+2.平面配准需要的输入参数：std::vector<My_Polygon> source_polygon;	std::vector<My_Polygon> target_polygon;
+polygon转化函数
+注：这是一个专用函数，不是一个通用函数！！！！！！，只针对于plane_clouds_final！！！！
+*/
+std::vector<My_Polygon> polygon_transform() {
+	std::vector<My_Polygon> polygons;
+	My_Polygon my_polygon;
+	for (int i = 0; i < plane_clouds_final.size(); i++) {
+		my_polygon.border = plane_clouds_final[i].border;
+		polygons.push_back(my_polygon);
+	}
+	return polygons;
+}
 /*加载目标、源点云以及相关平面多边形;*/
 void loadpolygon()																					//加载点云;
 {
@@ -1007,15 +1025,21 @@ void registration()
 	viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0, "target");
 }
 /***************************************************************************************************************************************/
-/*初始配准点云;*/
+/*
+change by czh
+通过求出的旋转矩阵，来显示平面配准的最终效果
+*/
 void registration_cloud()
 {
+	//变量转换器
+	verb_transform(target_cloud_registration, target_cloud_plane_registration);
+	verb_transform(cloud_result, source_cloud_plane_registration);
+
 	pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
 
 	cout << "Now,let's begin to registration! please wait a moment..." << endl;
 	pcl::transformPointCloud(*source_cloud_plane_registration, *output, transformation_matrix_plane_registration);
 	*source_cloud_plane_registration = *output;
-
 
 	viewer_cloud.removeAllPointClouds();
 	viewer_cloud.addPointCloud(source_cloud_plane_registration, "source");
