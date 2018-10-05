@@ -80,6 +80,7 @@ public:
     QAction *rotatePointCloudAction;
     QAction *registrationPlaneAction;
     QAction *voxelGridFiltMergeCloudAction;
+    QAction *action_3;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QVTKWidget *qvtkWidget;
@@ -211,6 +212,8 @@ public:
         registrationPlaneAction->setObjectName(QStringLiteral("registrationPlaneAction"));
         voxelGridFiltMergeCloudAction = new QAction(MainWindow);
         voxelGridFiltMergeCloudAction->setObjectName(QStringLiteral("voxelGridFiltMergeCloudAction"));
+        action_3 = new QAction(MainWindow);
+        action_3->setObjectName(QStringLiteral("action_3"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setLayoutDirection(Qt::LeftToRight);
@@ -277,15 +280,9 @@ public:
         fileMenu->addAction(loadPolyDataAction);
         renderPropertyMenu->addAction(bgColorMenu);
         renderPropertyMenu->addAction(pointCloudColorMenu);
-        renderPropertyMenu->addAction(removePointCloudAction);
         pointCloudPreProcessMenu->addAction(removeRedundantPointsAction);
         pointCloudPreProcessMenu->addAction(translateToCentroidAction);
         pointCloudPreProcessMenu->addAction(regulateCoorAction);
-        pointCloudPreProcessMenu->addSeparator();
-        pointCloudPreProcessMenu->addAction(removeNanAction);
-        pointCloudPreProcessMenu->addAction(voxelGridFiltAction);
-        pointCloudPreProcessMenu->addSeparator();
-        pointCloudPreProcessMenu->addAction(voxelGridFiltMergeCloudAction);
         param_set_menu->addAction(plane_detect_set_param_Action);
         param_set_menu->addAction(three_d_reconstruct_Action);
         plane_detect_menu->addAction(load_param_action);
@@ -327,12 +324,17 @@ public:
         delLineSegMenu->addAction(displayLineSegAction);
         delLineSegMenu->addAction(switchLineSegAction);
         delLineSegMenu->addAction(performLineSegDelAction);
+        registrationMenu->addAction(removeNanAction);
+        registrationMenu->addAction(voxelGridFiltAction);
+        registrationMenu->addSeparator();
         registrationMenu->addAction(rotatePointCloudAction);
         registrationMenu->addSeparator();
         registrationMenu->addAction(registrationSACAction);
         registrationMenu->addAction(registrationICPAction);
         registrationMenu->addSeparator();
         registrationMenu->addAction(registrationPlaneAction);
+        registrationMenu->addSeparator();
+        registrationMenu->addAction(voxelGridFiltMergeCloudAction);
         repairHolesMenu->addAction(repairHolesAction);
 
         retranslateUi(MainWindow);
@@ -395,6 +397,7 @@ public:
         rotatePointCloudAction->setText(QApplication::translate("MainWindow", "\346\227\213\350\275\254\347\202\271\344\272\221", Q_NULLPTR));
         registrationPlaneAction->setText(QApplication::translate("MainWindow", "\345\237\272\344\272\216\345\271\263\351\235\242\351\205\215\345\207\206", Q_NULLPTR));
         voxelGridFiltMergeCloudAction->setText(QApplication::translate("MainWindow", "\344\270\244\347\202\271\344\272\221\345\220\210\345\271\266\345\220\216\350\277\233\350\241\214\346\273\244\346\263\242", Q_NULLPTR));
+        action_3->setText(QApplication::translate("MainWindow", "\344\270\244\347\202\271\344\272\221\345\220\210\345\271\266\346\273\244\346\263\242\345\271\266\344\277\235\345\255\230", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));

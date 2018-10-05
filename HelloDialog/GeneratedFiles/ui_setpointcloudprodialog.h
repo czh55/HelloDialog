@@ -20,7 +20,6 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QWidget>
 
@@ -38,14 +37,12 @@ public:
     QSlider *sizeSlider;
     QLabel *label_4;
     QSlider *gSlider;
-    QLabel *label_5;
     QLCDNumber *BlcdNumber;
     QLCDNumber *PointSizelcdNumber;
     QLabel *label_3;
     QLCDNumber *RlcdNumber;
     QLCDNumber *GlcdNumber;
     QHBoxLayout *horizontalLayout;
-    QLineEdit *pointCloudID;
     QDialogButtonBox *buttonBox;
 
     void setupUi(QDialog *SetPointCloudProDialog)
@@ -98,11 +95,6 @@ public:
 
         gridLayout->addWidget(gSlider, 2, 1, 1, 1);
 
-        label_5 = new QLabel(gridLayoutWidget);
-        label_5->setObjectName(QStringLiteral("label_5"));
-
-        gridLayout->addWidget(label_5, 9, 0, 1, 1);
-
         BlcdNumber = new QLCDNumber(gridLayoutWidget);
         BlcdNumber->setObjectName(QStringLiteral("BlcdNumber"));
 
@@ -130,13 +122,9 @@ public:
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        pointCloudID = new QLineEdit(gridLayoutWidget);
-        pointCloudID->setObjectName(QStringLiteral("pointCloudID"));
-
-        horizontalLayout->addWidget(pointCloudID);
-
         buttonBox = new QDialogButtonBox(gridLayoutWidget);
         buttonBox->setObjectName(QStringLiteral("buttonBox"));
+        buttonBox->setLayoutDirection(Qt::RightToLeft);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
         horizontalLayout->addWidget(buttonBox);
@@ -161,7 +149,6 @@ public:
         label->setText(QApplication::translate("SetPointCloudProDialog", "Red Channel:", Q_NULLPTR));
         label_2->setText(QApplication::translate("SetPointCloudProDialog", "Green Channel:", Q_NULLPTR));
         label_4->setText(QApplication::translate("SetPointCloudProDialog", "PointSize:", Q_NULLPTR));
-        label_5->setText(QApplication::translate("SetPointCloudProDialog", "PointCloudID:", Q_NULLPTR));
         label_3->setText(QApplication::translate("SetPointCloudProDialog", "Blue Channel:", Q_NULLPTR));
     } // retranslateUi
 

@@ -16,7 +16,7 @@ public:
     explicit SetPointCloudProDialog(QWidget *parent = 0);
     ~SetPointCloudProDialog();
 
-    void getData(int &R, int &G, int &B, int &size, QString &cloudID);
+    void getData(int &R, int &G, int &B, int &size);
 
 private:
     Ui::SetPointCloudProDialog *ui;

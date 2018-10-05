@@ -77,8 +77,6 @@ private slots:
 
     void on_performRegulateAction_triggered();
 
-    void on_removePointCloudAction_triggered();
-
     void on_createPSAction_triggered();
 
     void on_savePointNormalFileAction_triggered();

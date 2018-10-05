@@ -61,7 +61,6 @@
     </property>
     <addaction name="bgColorMenu"/>
     <addaction name="pointCloudColorMenu"/>
-    <addaction name="removePointCloudAction"/>
    </widget>
    <widget class="QMenu" name="pointCloudPreProcessMenu">
     <property name="title">
@@ -70,11 +69,6 @@
     <addaction name="removeRedundantPointsAction"/>
     <addaction name="translateToCentroidAction"/>
     <addaction name="regulateCoorAction"/>
-    <addaction name="separator"/>
-    <addaction name="removeNanAction"/>
-    <addaction name="voxelGridFiltAction"/>
-    <addaction name="separator"/>
-    <addaction name="voxelGridFiltMergeCloudAction"/>
    </widget>
    <widget class="QMenu" name="param_set_menu">
     <property name="title">
@@ -161,12 +155,17 @@
     <property name="title">
      <string>配准</string>
     </property>
+    <addaction name="removeNanAction"/>
+    <addaction name="voxelGridFiltAction"/>
+    <addaction name="separator"/>
     <addaction name="rotatePointCloudAction"/>
     <addaction name="separator"/>
     <addaction name="registrationSACAction"/>
     <addaction name="registrationICPAction"/>
     <addaction name="separator"/>
     <addaction name="registrationPlaneAction"/>
+    <addaction name="separator"/>
+    <addaction name="voxelGridFiltMergeCloudAction"/>
    </widget>
    <widget class="QMenu" name="repairHolesMenu">
     <property name="title">
@@ -449,6 +448,11 @@
   <action name="voxelGridFiltMergeCloudAction">
    <property name="text">
     <string>两点云合并后进行滤波</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>两点云合并滤波并保存</string>
    </property>
   </action>
  </widget>

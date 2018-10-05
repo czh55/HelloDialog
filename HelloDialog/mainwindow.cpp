@@ -452,6 +452,7 @@ void MainWindow::on_bgColorMenu_triggered()
     viewer_cloud.spinOnce();
     ui->qvtkWidget->update ();
 }
+//change by czh
 // 改变点云颜色
 void MainWindow::on_pointCloudColorMenu_triggered()
 {
@@ -459,12 +460,12 @@ void MainWindow::on_pointCloudColorMenu_triggered()
     if(dlg->exec() != QDialog::Accepted) return;
 
     int r,g,b,size;
-    QString q_cloud_id;
-    dlg->getData(r,g,b,size, q_cloud_id);
+    dlg->getData(r,g,b,size);
     delete dlg;
 
-    viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, q_cloud_id.toStdString());
-    viewer_cloud.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, size, q_cloud_id.toStdString());
+	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_color_h(source_cloud, r, g, b);
+	viewer_cloud.addPointCloud(source_cloud, cloud_color_h);
+
 }
 // 把点云移动至重心
 void MainWindow::on_translateToCentroidAction_triggered()
@@ -598,15 +599,6 @@ void MainWindow::on_performRegulateAction_triggered()
 {
     is_norm_direction_valid = RegulateNormalDialog.is_norm_direction_valid;
     regulateNormal();
-}
-// 移除点云
-void MainWindow::on_removePointCloudAction_triggered()
-{
-   RemovePointCloudDialog dlg;
-   if(dlg.exec() == QDialog::Accepted)
-   {
-       viewer_cloud.removePointCloud(dlg.cloudID.toStdString());
-   }
 }
 // 创建参数空间
 void MainWindow::on_createPSAction_triggered()
