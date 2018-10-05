@@ -50,8 +50,6 @@
      <string>文件</string>
     </property>
     <addaction name="openFileAction"/>
-    <addaction name="openFile1RegistrationAction"/>
-    <addaction name="openFile2RegistrationAction"/>
     <addaction name="openPointCloudNormalFileAction"/>
     <addaction name="loadPolyDataAction"/>
    </widget>
@@ -61,21 +59,24 @@
     </property>
     <addaction name="bgColorMenu"/>
     <addaction name="pointCloudColorMenu"/>
+    <addaction name="cleanPointCloudAction"/>
    </widget>
    <widget class="QMenu" name="pointCloudPreProcessMenu">
     <property name="title">
      <string>点云预处理</string>
     </property>
+    <addaction name="removeNan1Action"/>
     <addaction name="removeRedundantPointsAction"/>
     <addaction name="translateToCentroidAction"/>
     <addaction name="regulateCoorAction"/>
+    <addaction name="voxelGridFilt1Action"/>
    </widget>
    <widget class="QMenu" name="param_set_menu">
     <property name="title">
      <string>参数设置</string>
     </property>
     <addaction name="plane_detect_set_param_Action"/>
-    <addaction name="three_d_reconstruct_Action"/>
+    <addaction name="load_param_action"/>
    </widget>
    <widget class="QMenu" name="plane_detect_menu">
     <property name="title">
@@ -132,8 +133,6 @@
      <addaction name="performPolyCutAction"/>
      <addaction name="delLineSegMenu"/>
     </widget>
-    <addaction name="load_param_action"/>
-    <addaction name="separator"/>
     <addaction name="normalProcessMenu"/>
     <addaction name="regulateNormalMenu"/>
     <addaction name="psMenu"/>
@@ -155,6 +154,9 @@
     <property name="title">
      <string>配准</string>
     </property>
+    <addaction name="openFile1RegistrationAction"/>
+    <addaction name="openFile2RegistrationAction"/>
+    <addaction name="separator"/>
     <addaction name="removeNanAction"/>
     <addaction name="voxelGridFiltAction"/>
     <addaction name="separator"/>
@@ -217,7 +219,7 @@
   </action>
   <action name="pointCloudColorMenu">
    <property name="text">
-    <string>点云属性</string>
+    <string>点云颜色</string>
    </property>
   </action>
   <action name="removePointCloudAction">
@@ -252,7 +254,7 @@
   </action>
   <action name="plane_detect_set_param_Action">
    <property name="text">
-    <string>平面提取</string>
+    <string>参数设置</string>
    </property>
   </action>
   <action name="three_d_reconstruct_Action">
@@ -453,6 +455,21 @@
   <action name="action_3">
    <property name="text">
     <string>两点云合并滤波并保存</string>
+   </property>
+  </action>
+  <action name="cleanPointCloudAction">
+   <property name="text">
+    <string>清屏点云</string>
+   </property>
+  </action>
+  <action name="removeNan1Action">
+   <property name="text">
+    <string>移除NAN点</string>
+   </property>
+  </action>
+  <action name="voxelGridFilt1Action">
+   <property name="text">
+    <string>体素滤波</string>
    </property>
   </action>
  </widget>

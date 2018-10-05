@@ -56,6 +56,12 @@ private slots:
 	void on_repairHolesAction_triggered();
 
     void on_bgColorMenu_triggered();
+	
+	void on_cleanPointCloudAction_triggered();
+
+	void on_removeNan1Action_triggered();
+
+	void on_voxelGridFilt1Action_triggered();
 
     void on_pointCloudColorMenu_triggered();
 

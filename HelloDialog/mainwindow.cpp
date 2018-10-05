@@ -92,13 +92,6 @@ void MainWindow::on_openFile2RegistrationAction_triggered()
 //输出变量：source_cloud_registration  target_cloud_registration
 void MainWindow::on_removeNanAction_triggered()
 {
-	/* std::vector<int> indices;
-	PointCloudT::Ptr new_cloud (new PointCloudT);
-	pcl::removeNaNFromPointCloud<pcl::PointXYZ>(*source_cloud, *new_cloud, indices);
-	source_cloud = new_cloud;
-
-	cout << "After nan points been removed, points size =" << source_cloud->size() << endl;*/
-
 	//变量转换器
 	verb_transform(cloud_result, source_cloud_registration);
 	
@@ -118,6 +111,22 @@ void MainWindow::on_removeNanAction_triggered()
 	//变量转换器
 	verb_transform(source_cloud_registration, cloud_result);
 }
+
+//define by czh
+//移除source_cloud的NAN点
+void MainWindow::on_removeNan1Action_triggered() {
+	std::vector<int> indices;
+	PointCloudT::Ptr new_cloud (new PointCloudT);
+	pcl::removeNaNFromPointCloud<pcl::PointXYZ>(*source_cloud, *new_cloud, indices);
+	source_cloud = new_cloud;
+
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
+
+	cout << "After nan points been removed, points size =" << source_cloud->size() << endl;
+}
+
 
 //define by czh
 /*
@@ -159,23 +168,14 @@ void MainWindow::on_voxelGridFiltMergeCloudAction_triggered() {
 }
 
 
+
 //define by czh
 // 进行体素滤波
 //输入变量：source_cloud_registration  target_cloud_registration
 //输出变量：source_cloud_registration  target_cloud_registration
 void MainWindow::on_voxelGridFiltAction_triggered()
 {
-	/* PointCloudT::Ptr cloud_filtered (new PointCloudT);
-	pcl::VoxelGrid<pcl::PointXYZ> sor;
-	sor.setInputCloud(source_cloud);
-	float delta = 0.12f;
-	sor.setLeafSize(delta, delta, delta);
-	sor.filter(*cloud_filtered);
-	cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
-	source_cloud = cloud_filtered;
-	viewer_cloud.removeAllPointClouds();
-	viewer_cloud.addPointCloud(source_cloud, "source");
-	viewer_cloud.spinOnce();*/
+	
 	
 	//变量转换器
 	verb_transform(cloud_result, source_cloud_registration);
@@ -208,6 +208,25 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 	//变量转换器
 	verb_transform(source_cloud_registration, cloud_result);
 }
+
+//define by czh
+//对source_cloud进行体素滤波
+void MainWindow::on_voxelGridFilt1Action_triggered() {
+	PointCloudT::Ptr cloud_filtered (new PointCloudT);
+	pcl::VoxelGrid<pcl::PointXYZ> sor;
+	sor.setInputCloud(source_cloud);
+	float delta = 0.12f;
+	sor.setLeafSize(delta, delta, delta);
+	sor.filter(*cloud_filtered);
+	cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
+	source_cloud = cloud_filtered;
+
+	viewer_cloud.removeAllPointClouds();
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
+	viewer_cloud.spinOnce();
+}
+
 
 //*******************************************结束：移除NAN点和体素滤波直接覆盖原点云对象*********************************************************************
 
@@ -465,7 +484,15 @@ void MainWindow::on_pointCloudColorMenu_triggered()
 
 	pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_color_h(source_cloud, r, g, b);
 	viewer_cloud.addPointCloud(source_cloud, cloud_color_h);
+	ui->qvtkWidget->update();
+}
 
+//define by czh
+//清除屏幕中的点云
+void MainWindow::on_cleanPointCloudAction_triggered() {
+	//清除界面上所有点云
+	viewer_cloud.removeAllPointClouds();
+	ui->qvtkWidget->update();
 }
 // 把点云移动至重心
 void MainWindow::on_translateToCentroidAction_triggered()
@@ -526,6 +553,7 @@ void MainWindow::on_removeRedundantPointsAction_triggered()
     cout << "after remove redundant points, cloud size = " << source_cloud->size() << endl;
 }
 
+
 // 修正坐标
 // 默认y轴朝上；x轴水平；z轴指向岩体方向
 // 简单处理：swap y与z的值，z值再乘以-1
@@ -540,6 +568,7 @@ void MainWindow::on_regulateCoorAction_triggered()
         source_cloud->points[i].z *= -1.0f;
     }
     viewer_cloud.updatePointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
 }
 
 // 为平面提取加载参数
@@ -803,10 +832,15 @@ void MainWindow::on_runAgainAction_triggered()
 // 自动执行
 void MainWindow::on_autoPerformAction_triggered()
 {
+	// 重新估计法向量
+	estimateNormal();
+
     // 霍夫变换
     // 创建参数空间
     start = std::clock();
+	// 创建参数空间
     createPS();
+	// 向参数空间进行投票
     voteForPS();
     finish = std::clock();
     cout << "parameter space has been constructed, ps has " << ps_cloud->size() << " elements." << endl;
