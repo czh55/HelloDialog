@@ -72,7 +72,7 @@ struct Triangle
 struct Plane
 {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-		PointCloudT::Ptr border;		// 平面的边界点
+	PointCloudT::Ptr border;		// 平面的边界点
 	PointCloudT::Ptr points_set;	// 平面点集
 	pcl::ModelCoefficients coeff;					// 平面参数，法向量指向物体外部
 	std::vector<Triangle, Eigen::aligned_allocator<Triangle>> triangles;	// 多边形的三角形面片

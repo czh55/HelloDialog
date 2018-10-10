@@ -221,8 +221,6 @@ int iterations = 50;
 #define PLANE_REGISTRATION_PATH_txt1 "3DReconstruction/cloud1.pcd.txt"
 #define PLANE_REGISTRATION_PATH_txt2 "3DReconstruction/cloud2.pcd.txt"
 
-#define max(a,b)((a>b)?b:a)
-#define min(a,b)((a<b)?b:a)
 
 //define by czh /***************************************************************************************************************************************/
 /*容器;*/
@@ -309,8 +307,8 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void*
 //define by czh
 /*目的：在平面配准中，不需要中间的*.pcd 和*.txt文件，直接通过变量来存储
 这其中涉及到的变量有：
-1.平面提取的最后结果：plane_clouds_final
-2.平面配准需要的输入参数：std::vector<My_Polygon> source_polygon;	std::vector<My_Polygon> target_polygon;
+1.平面【提取】的最后结果：plane_clouds_final
+2.平面【配准】需要的输入参数：std::vector<My_Polygon> source_polygon;	std::vector<My_Polygon> target_polygon;
 polygon转化函数
 注：这是一个专用函数，不是一个通用函数！！！！！！，只针对于plane_clouds_final！！！！
 */
@@ -579,10 +577,10 @@ bool IsRectCross(int s_first, int s_next, int t_first, int t_next)								  //排
 	q1 = T_polyAfterN.border->points[t_first];
 	q2 = T_polyAfterN.border->points[t_next];
 
-	bool ret = min(p1.x, p2.x) <= max(q1.x, q2.x) &&
-		min(q1.x, q2.x) <= max(p1.x, p2.x) &&
-		min(p1.y, p2.y) <= max(q1.y, q2.y) &&
-		min(q1.y, q2.y) <= max(p1.y, p2.y);
+	bool ret = std::min(p1.x, p2.x) <= std::max(q1.x, q2.x) &&
+		std::min(q1.x, q2.x) <= std::max(p1.x, p2.x) &&
+		std::min(p1.y, p2.y) <= std::max(q1.y, q2.y) &&
+		std::min(q1.y, q2.y) <= std::max(p1.y, p2.y);
 
 	return ret;
 }

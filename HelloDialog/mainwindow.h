@@ -57,6 +57,8 @@ private slots:
 
 	void on_repairHolesOFFAction_triggered();
 
+	void on_TriangularMeshingAction_triggered();
+
 	void on_repairHolesAction_triggered();
 
     void on_bgColorMenu_triggered();

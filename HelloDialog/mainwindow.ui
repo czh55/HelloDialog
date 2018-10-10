@@ -175,6 +175,13 @@
      <string>孔洞修复</string>
     </property>
     <addaction name="repairHolesAction"/>
+    <addaction name="repairHolesOFFAction"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>点云网格化</string>
+    </property>
+    <addaction name="TriangularMeshingAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="renderPropertyMenu"/>
@@ -183,6 +190,7 @@
    <addaction name="repairHolesMenu"/>
    <addaction name="param_set_menu"/>
    <addaction name="plane_detect_menu"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -476,6 +484,16 @@
   <action name="savePointCloudAction">
    <property name="text">
     <string>保存当前点云</string>
+   </property>
+  </action>
+  <action name="repairHolesOFFAction">
+   <property name="text">
+    <string>进行孔洞修复(结果为off)</string>
+   </property>
+  </action>
+  <action name="TriangularMeshingAction">
+   <property name="text">
+    <string>点云网格化(保存为.ply)</string>
    </property>
   </action>
  </widget>

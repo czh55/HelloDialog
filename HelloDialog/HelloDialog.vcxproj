@@ -136,6 +136,7 @@
     <ClInclude Include="HoleFilling.h" />
     <ClInclude Include="PlaneDetect.h" />
     <ClInclude Include="Registration.h" />
+    <ClInclude Include="TriangularMeshing.h" />
     <QtMoc Include="SetPointCloudProDialog.h" />
     <QtMoc Include="SetBGColorDialog.h" />
     <QtMoc Include="RemovePointCloudDialog.h" />

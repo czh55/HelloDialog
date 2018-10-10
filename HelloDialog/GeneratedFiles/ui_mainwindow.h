@@ -85,6 +85,8 @@ public:
     QAction *removeNan1Action;
     QAction *voxelGridFilt1Action;
     QAction *savePointCloudAction;
+    QAction *repairHolesOFFAction;
+    QAction *TriangularMeshingAction;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QVTKWidget *qvtkWidget;
@@ -102,6 +104,7 @@ public:
     QMenu *delLineSegMenu;
     QMenu *registrationMenu;
     QMenu *repairHolesMenu;
+    QMenu *menu;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -226,6 +229,10 @@ public:
         voxelGridFilt1Action->setObjectName(QStringLiteral("voxelGridFilt1Action"));
         savePointCloudAction = new QAction(MainWindow);
         savePointCloudAction->setObjectName(QStringLiteral("savePointCloudAction"));
+        repairHolesOFFAction = new QAction(MainWindow);
+        repairHolesOFFAction->setObjectName(QStringLiteral("repairHolesOFFAction"));
+        TriangularMeshingAction = new QAction(MainWindow);
+        TriangularMeshingAction->setObjectName(QStringLiteral("TriangularMeshingAction"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setLayoutDirection(Qt::LeftToRight);
@@ -270,6 +277,8 @@ public:
         registrationMenu->setObjectName(QStringLiteral("registrationMenu"));
         repairHolesMenu = new QMenu(menuBar);
         repairHolesMenu->setObjectName(QStringLiteral("repairHolesMenu"));
+        menu = new QMenu(menuBar);
+        menu->setObjectName(QStringLiteral("menu"));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -285,6 +294,7 @@ public:
         menuBar->addAction(repairHolesMenu->menuAction());
         menuBar->addAction(param_set_menu->menuAction());
         menuBar->addAction(plane_detect_menu->menuAction());
+        menuBar->addAction(menu->menuAction());
         fileMenu->addAction(openFileAction);
         fileMenu->addAction(openPointCloudNormalFileAction);
         fileMenu->addAction(loadPolyDataAction);
@@ -351,6 +361,8 @@ public:
         registrationMenu->addSeparator();
         registrationMenu->addAction(voxelGridFiltMergeCloudAction);
         repairHolesMenu->addAction(repairHolesAction);
+        repairHolesMenu->addAction(repairHolesOFFAction);
+        menu->addAction(TriangularMeshingAction);
 
         retranslateUi(MainWindow);
 
@@ -417,6 +429,8 @@ public:
         removeNan1Action->setText(QApplication::translate("MainWindow", "\347\247\273\351\231\244NAN\347\202\271", Q_NULLPTR));
         voxelGridFilt1Action->setText(QApplication::translate("MainWindow", "\344\275\223\347\264\240\346\273\244\346\263\242", Q_NULLPTR));
         savePointCloudAction->setText(QApplication::translate("MainWindow", "\344\277\235\345\255\230\345\275\223\345\211\215\347\202\271\344\272\221", Q_NULLPTR));
+        repairHolesOFFAction->setText(QApplication::translate("MainWindow", "\350\277\233\350\241\214\345\255\224\346\264\236\344\277\256\345\244\215(\347\273\223\346\236\234\344\270\272off)", Q_NULLPTR));
+        TriangularMeshingAction->setText(QApplication::translate("MainWindow", "\347\202\271\344\272\221\347\275\221\346\240\274\345\214\226(\344\277\235\345\255\230\344\270\272.ply)", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));
@@ -430,6 +444,7 @@ public:
         delLineSegMenu->setTitle(QApplication::translate("MainWindow", "\347\272\277\346\256\265\345\210\240\351\231\244", Q_NULLPTR));
         registrationMenu->setTitle(QApplication::translate("MainWindow", "\351\205\215\345\207\206", Q_NULLPTR));
         repairHolesMenu->setTitle(QApplication::translate("MainWindow", "\345\255\224\346\264\236\344\277\256\345\244\215", Q_NULLPTR));
+        menu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\347\275\221\346\240\274\345\214\226", Q_NULLPTR));
     } // retranslateUi
 
 };

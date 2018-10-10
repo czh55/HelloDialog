@@ -26,14 +26,19 @@ typedef boost::graph_traits<Mesh>::face_descriptor face_descriptor;
 
 /*
 孔洞修复代码，最终输出的结果保存在result_HoleFilling文件夹中，为.off文件。输入文件默认在data文件夹中
+注：输入和输出都是硬盘的文件
 参数：
-fileNameIn：是要处理的网格化文件，文件的格式可以为ply,off。eg:"bunny.ply"
+fileNameIn：是要处理的网格化文件，文件的格式可以为ply,off。eg:"result_mesh/result_mesh.ply"
 fileNameOut:输出的结果文件，格式为off。eg:"filled_OM.off"
 */
-void holeFilling(std::string fileNameIn,std::string fileNameOut)
+void holeFilling(const char* fileNameIn,std::string fileNameOut)
 {
+	cout << "孔洞修复开始" << endl;
 	Mesh mesh;
-	OpenMesh::IO::read_mesh(mesh, "data/" + fileNameIn);
+	if (OpenMesh::IO::read_mesh(mesh, fileNameIn) == -1) {
+		cout << "没有读入网格文件" << endl;
+		return;
+	}
 
 	// Incrementally fill the holes
 	unsigned int nb_holes = 0;
@@ -66,6 +71,7 @@ void holeFilling(std::string fileNameIn,std::string fileNameOut)
 	std::cout << nb_holes << " holes have been filled" << std::endl;
 
 	OpenMesh::IO::write_mesh(mesh, "result_HoleFilling/"+ fileNameOut );
+	cout << "孔洞修复结束， 保存到：result_HoleFilling/" << fileNameOut << endl;
 }
 
 #endif // !HOLEFILLING_H

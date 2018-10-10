@@ -9,6 +9,7 @@
 #include "PlaneDetect.h"
 #include "Registration.h"
 #include "HoleFilling.h"
+#include "TriangularMeshing.h"
 #include "PlaneDetectSetParamDialog.h"
 #include <QSettings>
 #include <QMessageBox>
@@ -239,13 +240,33 @@ void MainWindow::on_savePointCloudAction_triggered() {
 }
 
 //define by czh
+//默认对【source_cloud】进行网格化
+void  MainWindow::on_TriangularMeshingAction_triggered() {
+	pcl::PolygonMesh mesh_result;
+	//执行网格化
+	triangularMeshing(source_cloud, mesh_result);
+
+	//保存网格化的结果
+	//保存一个具体的.ply文件，用于下一步的孔洞修复，孔洞修复是基于cgal中的openMesh结构，由于PCL的PointCloud类型不能直接转换成openMesh的mesh结构
+	pcl::io::savePLYFile("result_mesh/result_mesh.ply", mesh_result);
+}
+
+//define by czh
 //孔洞修复，保存结果为.off文件
+//注：只能读取"result_mesh/result_mesh.ply"，进行孔洞修复
 void MainWindow::on_repairHolesOFFAction_triggered() {
-	std::string fileNameIn = "bunny.ply";
+	const char* fileNameIn = "result_mesh/result_mesh.ply";
 	std::string fileNameOut = "filled_OM.off";
+	//执行孔洞修复
 	holeFilling(fileNameIn, fileNameOut);
 }
 
+
+//define by czh
+//孔洞修复
+void MainWindow::on_repairHolesAction_triggered() {
+
+}
 //define by czh
 //旋转原点云
 //输入数据：source_cloud_registration
@@ -467,12 +488,7 @@ void MainWindow::on_registrationPlaneAction_triggered() {
 	cout << "finally cost " << finish - start << " ms." << endl;
 	memset(state, 0, CMD_SIZE);
 }
-//define by czh
-//孔洞修复
-//输入数据
-void MainWindow::on_repairHolesAction_triggered() {
 
-}
 // 改变背景颜色
 void MainWindow::on_bgColorMenu_triggered()
 {
