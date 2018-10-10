@@ -252,13 +252,20 @@ void  MainWindow::on_TriangularMeshingAction_triggered() {
 }
 
 //define by czh
-//孔洞修复，保存结果为.off文件
+//孔洞修复，保存结果为.off或者ply格式都行文件
 //注：只能读取"result_mesh/result_mesh.ply"，进行孔洞修复
 void MainWindow::on_repairHolesOFFAction_triggered() {
 	const char* fileNameIn = "result_mesh/result_mesh.ply";
-	std::string fileNameOut = "filled_OM.off";
+	std::string fileNameOut = "filled_OM.ply";
 	//执行孔洞修复
 	holeFilling(fileNameIn, fileNameOut);
+
+	//将结果读取出来，并且从ply转换为pcd格式
+	pcl::PLYReader reader;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	reader.read<pcl::PointXYZ>("result_HoleFilling/filled_OM.ply", *cloud);
+	pcl::io::savePCDFile("result_pcd/filed_OM.pcd", *cloud);
+	cout << "结果从filled_OM.ply转换为了filled_OM.pcd,并保存在result_pcd文件夹下" << endl;
 }
 
 

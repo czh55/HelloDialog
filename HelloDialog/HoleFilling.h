@@ -25,11 +25,11 @@ typedef boost::graph_traits<Mesh>::halfedge_descriptor halfedge_descriptor;
 typedef boost::graph_traits<Mesh>::face_descriptor face_descriptor;
 
 /*
-孔洞修复代码，最终输出的结果保存在result_HoleFilling文件夹中，为.off文件。输入文件默认在data文件夹中
+孔洞修复代码，最终输出的结果保存在result_HoleFilling文件夹中，为.ply或.off文件。输入文件默认在data文件夹中
 注：输入和输出都是硬盘的文件
 参数：
 fileNameIn：是要处理的网格化文件，文件的格式可以为ply,off。eg:"result_mesh/result_mesh.ply"
-fileNameOut:输出的结果文件，格式为off。eg:"filled_OM.off"
+fileNameOut:输出的结果文件，格式为off。eg:"filled_OM.ply"
 */
 void holeFilling(const char* fileNameIn,std::string fileNameOut)
 {
@@ -69,8 +69,9 @@ void holeFilling(const char* fileNameIn,std::string fileNameOut)
 	CGAL_assertion(CGAL::is_valid_polygon_mesh(mesh));
 	std::cout << std::endl;
 	std::cout << nb_holes << " holes have been filled" << std::endl;
-
+	//保存最终结果
 	OpenMesh::IO::write_mesh(mesh, "result_HoleFilling/"+ fileNameOut );
+
 	cout << "孔洞修复结束， 保存到：result_HoleFilling/" << fileNameOut << endl;
 }
 
