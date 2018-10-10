@@ -8,6 +8,7 @@
 #include <pcl/filters/filter.h>
 #include "PlaneDetect.h"
 #include "Registration.h"
+#include "HoleFilling.h"
 #include "PlaneDetectSetParamDialog.h"
 #include <QSettings>
 #include <QMessageBox>
@@ -215,7 +216,7 @@ void MainWindow::on_voxelGridFilt1Action_triggered() {
 	PointCloudT::Ptr cloud_filtered (new PointCloudT);
 	pcl::VoxelGrid<pcl::PointXYZ> sor;
 	sor.setInputCloud(source_cloud);
-	float delta = 0.12f;
+	float delta = 0.4f;
 	sor.setLeafSize(delta, delta, delta);
 	sor.filter(*cloud_filtered);
 	cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
@@ -229,6 +230,21 @@ void MainWindow::on_voxelGridFilt1Action_triggered() {
 
 
 //*******************************************结束：移除NAN点和体素滤波直接覆盖原点云对象*********************************************************************
+
+//define by czh
+//保存当前点云
+void MainWindow::on_savePointCloudAction_triggered() {
+	pcl::io::savePCDFile("now_source_cloud.pcd", *source_cloud);
+	cout << "save source_cloud success" << endl;
+}
+
+//define by czh
+//孔洞修复，保存结果为.off文件
+void MainWindow::on_repairHolesOFFAction_triggered() {
+	std::string fileNameIn = "bunny.ply";
+	std::string fileNameOut = "filled_OM.off";
+	holeFilling(fileNameIn, fileNameOut);
+}
 
 //define by czh
 //旋转原点云

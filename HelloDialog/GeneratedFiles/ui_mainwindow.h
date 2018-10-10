@@ -84,6 +84,7 @@ public:
     QAction *cleanPointCloudAction;
     QAction *removeNan1Action;
     QAction *voxelGridFilt1Action;
+    QAction *savePointCloudAction;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QVTKWidget *qvtkWidget;
@@ -223,6 +224,8 @@ public:
         removeNan1Action->setObjectName(QStringLiteral("removeNan1Action"));
         voxelGridFilt1Action = new QAction(MainWindow);
         voxelGridFilt1Action->setObjectName(QStringLiteral("voxelGridFilt1Action"));
+        savePointCloudAction = new QAction(MainWindow);
+        savePointCloudAction->setObjectName(QStringLiteral("savePointCloudAction"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setLayoutDirection(Qt::LeftToRight);
@@ -293,6 +296,7 @@ public:
         pointCloudPreProcessMenu->addAction(translateToCentroidAction);
         pointCloudPreProcessMenu->addAction(regulateCoorAction);
         pointCloudPreProcessMenu->addAction(voxelGridFilt1Action);
+        pointCloudPreProcessMenu->addAction(savePointCloudAction);
         param_set_menu->addAction(plane_detect_set_param_Action);
         param_set_menu->addAction(load_param_action);
         plane_detect_menu->addAction(normalProcessMenu->menuAction());
@@ -412,6 +416,7 @@ public:
         cleanPointCloudAction->setText(QApplication::translate("MainWindow", "\346\270\205\345\261\217\347\202\271\344\272\221", Q_NULLPTR));
         removeNan1Action->setText(QApplication::translate("MainWindow", "\347\247\273\351\231\244NAN\347\202\271", Q_NULLPTR));
         voxelGridFilt1Action->setText(QApplication::translate("MainWindow", "\344\275\223\347\264\240\346\273\244\346\263\242", Q_NULLPTR));
+        savePointCloudAction->setText(QApplication::translate("MainWindow", "\344\277\235\345\255\230\345\275\223\345\211\215\347\202\271\344\272\221", Q_NULLPTR));
         fileMenu->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266", Q_NULLPTR));
         renderPropertyMenu->setTitle(QApplication::translate("MainWindow", "\346\270\262\346\237\223\345\261\236\346\200\247", Q_NULLPTR));
         pointCloudPreProcessMenu->setTitle(QApplication::translate("MainWindow", "\347\202\271\344\272\221\351\242\204\345\244\204\347\220\206", Q_NULLPTR));

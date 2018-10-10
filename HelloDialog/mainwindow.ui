@@ -70,6 +70,7 @@
     <addaction name="translateToCentroidAction"/>
     <addaction name="regulateCoorAction"/>
     <addaction name="voxelGridFilt1Action"/>
+    <addaction name="savePointCloudAction"/>
    </widget>
    <widget class="QMenu" name="param_set_menu">
     <property name="title">
@@ -470,6 +471,11 @@
   <action name="voxelGridFilt1Action">
    <property name="text">
     <string>体素滤波</string>
+   </property>
+  </action>
+  <action name="savePointCloudAction">
+   <property name="text">
+    <string>保存当前点云</string>
    </property>
   </action>
  </widget>

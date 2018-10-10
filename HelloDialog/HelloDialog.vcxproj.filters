@@ -82,6 +82,9 @@
     <ClInclude Include="Registration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HoleFilling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainWindow.h">
