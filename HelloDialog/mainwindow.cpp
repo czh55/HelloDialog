@@ -270,11 +270,6 @@ void MainWindow::on_repairHolesOFFAction_triggered() {
 
 
 //define by czh
-//孔洞修复
-void MainWindow::on_repairHolesAction_triggered() {
-
-}
-//define by czh
 //旋转原点云
 //输入数据：source_cloud_registration
 //输出数据：cloud_tr
