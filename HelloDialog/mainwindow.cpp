@@ -15,6 +15,12 @@
 #include <QMessageBox>
 #include "RemovePointCloudDialog.h"
 #include <omp.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/convolution_3d.h>
+#include <pcl/filters/convolution.h>
+#include <pcl/filters/fast_bilateral.h>
+#include <pcl/filters/random_sample.h>
+#include <pcl/surface/mls.h> 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -56,6 +62,54 @@ void MainWindow::on_openFileAction_triggered()
     viewer_cloud.removePointCloud("source");
     viewer_cloud.addPointCloud(source_cloud, "source");
     ui->qvtkWidget->update ();
+}
+void MainWindow::on_openTxtAction_triggered()
+{
+	int number_Txt;
+	FILE *fp_txt;
+	tagPOINT_3D TxtPoint;
+	vector<tagPOINT_3D> m_vTxtPoints;
+	QString fileName = QFileDialog::getOpenFileName(this, tr("open file"), " ", tr("txtFiles(*.txt)"));
+	if (fileName == "") return;
+	//QApplication app(argc, argv);
+
+	QByteArray ba = fileName.toLatin1();
+	char *c_str2 = ba.data();
+	//printf("str2: %s", c_str2);
+	//return app.exec();
+	fp_txt = fopen(c_str2, "r");
+
+	if (fp_txt)
+	{
+		while (fscanf(fp_txt, "%lf %lf %lf", &TxtPoint.x, &TxtPoint.y, &TxtPoint.z) != EOF)
+		{
+			m_vTxtPoints.push_back(TxtPoint);
+		}
+	}
+	else
+		cout << "txt数据加载失败！" << endl;
+	number_Txt = m_vTxtPoints.size();
+	pcl::PointCloud<pcl::PointXYZ> cloud_txt;
+
+
+	// Fill in the cloud data  
+	cloud_txt.width = number_Txt;
+	cloud_txt.height = 1;
+	cloud_txt.is_dense = false;
+	cloud_txt.points.resize(cloud_txt.width * cloud_txt.height);
+
+
+	for (size_t i = 0; i < cloud_txt.points.size(); ++i)
+	{
+		cloud_txt.points[i].x = m_vTxtPoints[i].x;
+		cloud_txt.points[i].y = m_vTxtPoints[i].y;
+		cloud_txt.points[i].z = m_vTxtPoints[i].z;
+	}
+	*source_cloud = cloud_txt;
+	cout << "loaded " << source_cloud->size() << " points." << endl;
+	viewer_cloud.removePointCloud("source");
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
 }
 //define by czh
 // 打开配准点云file_1  target_cloud_registration
@@ -154,7 +208,10 @@ void MainWindow::on_voxelGridFiltMergeCloudAction_triggered() {
 
 	//下采样滤波 source_cloud_registration
 	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
-	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
+	float delta{};
+	cout << "set  leafsize :" << endl;
+	cin >> delta;
+	voxel_grid.setLeafSize(delta, delta, delta);
 	voxel_grid.setInputCloud(cloud_merge);
 	int pointCloud_num1 = mergeCloud->size();
 	PointCloudT::Ptr cloud_tr(new PointCloudT);
@@ -187,7 +244,10 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 
 	//下采样滤波 source_cloud_registration
 	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid;
-	voxel_grid.setLeafSize(0.012, 0.012, 0.012);
+	float delta{};
+	cout << "set both leafsize :" << endl;
+	cin >> delta;
+	voxel_grid.setLeafSize(delta, delta, delta);
 	voxel_grid.setInputCloud(source_cloud_registration);
 	int pointCloud_num1 = source_cloud_registration->size();
 	PointCloudT::Ptr cloud_tr(new PointCloudT);
@@ -195,7 +255,7 @@ void MainWindow::on_voxelGridFiltAction_triggered()
 	std::cout << "down size *cloud_tr_o from " << pointCloud_num1 << "to" << source_cloud_registration->size() << endl;
 	//下采样滤波 cloud_tgt_o
 	pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_2;
-	voxel_grid_2.setLeafSize(0.012, 0.012, 0.012);
+	voxel_grid_2.setLeafSize(delta, delta, delta);
 	voxel_grid_2.setInputCloud(target_cloud_registration);
 	int pointCloud_num2 = target_cloud_registration->size();
 	PointCloudT::Ptr cloud_tgt(new PointCloudT);
@@ -217,7 +277,9 @@ void MainWindow::on_voxelGridFilt1Action_triggered() {
 	PointCloudT::Ptr cloud_filtered (new PointCloudT);
 	pcl::VoxelGrid<pcl::PointXYZ> sor;
 	sor.setInputCloud(source_cloud);
-	float delta = 0.4f;
+	float delta{};
+	cout << "set leafsize :" << endl;
+	cin >> delta;
 	sor.setLeafSize(delta, delta, delta);
 	sor.filter(*cloud_filtered);
 	cout << "after voxel filterd, cloud size = " << cloud_filtered->size() << endl;
@@ -227,6 +289,90 @@ void MainWindow::on_voxelGridFilt1Action_triggered() {
 	viewer_cloud.addPointCloud(source_cloud, "source");
 	ui->qvtkWidget->update();
 	viewer_cloud.spinOnce();
+}
+//统计滤波
+void MainWindow::on_statisticalOutlierRemovalFiltAction_triggered()
+{
+	pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+	PointCloudT::Ptr cloud_filtered(new PointCloudT);
+	sor.setInputCloud(source_cloud);
+	float delta{};
+	cout << "设置在进行统计时考虑查询点临近点数，推荐50-150:" << endl;
+	cin >> delta;
+	sor.setMeanK(delta);
+	float felta{};
+	cout << "设置判断是否为离群点的阀值，推荐0.5-1.5:" << endl;
+	cin >> felta;
+	sor.setStddevMulThresh(felta);
+	sor.filter(*cloud_filtered);
+	cout << "after statisticalOutlierRemoval filt, cloud size = " << cloud_filtered->size() << endl;
+	source_cloud = cloud_filtered;
+
+	viewer_cloud.removeAllPointClouds();
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
+	viewer_cloud.spinOnce();
+}
+void MainWindow::on_setNumberforpointAction_triggered()
+{
+	//PointCloudT::Ptr cloud_in(new PointCloudT), cloud_out(new PointCloudT);
+	//boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("Viewer"));
+	//pcl::io::loadPCDFile("unknown_object.pcd", *cloud_in);
+	//std::cerr << *cloud_in << std::endl;
+	cout << "after statisticalOutlierRemoval filt, cloud size = " << endl;
+	pcl::RandomSample<pcl::PointXYZ> rs;
+	PointCloudT::Ptr cloud_filtered(new PointCloudT);
+	rs.setInputCloud(source_cloud);
+	float felta{};
+	cout << "设置点云点数" << endl;
+	cin >> felta;
+
+	rs.setSample(felta);
+	rs.filter(*cloud_filtered);
+	cout << "after statisticalOutlierRemoval filt, cloud size = " << cloud_filtered->size() << endl;
+	source_cloud = cloud_filtered;
+
+	viewer_cloud.removeAllPointClouds();
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	ui->qvtkWidget->update();
+	viewer_cloud.spinOnce();
+
+
+
+}
+void MainWindow::on_rebuildPlaneAction_triggered()
+{
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr treerebuild(new pcl::search::KdTree<pcl::PointXYZ>);
+	PointCloudT::Ptr mls_cloud(new PointCloudT);
+	pcl::PointCloud<pcl::PointNormal> mls_points;
+	pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> mls;
+	mls.setComputeNormals(true);
+	mls.setInputCloud(source_cloud);
+	mls.setPolynomialFit(true);
+	mls.setSearchMethod(treerebuild);
+	float felta{};
+	cout << "设置搜索范围 提示0.3" << endl;
+	cin >> felta;
+	mls.setSearchRadius(felta);
+	cout << "start" << endl;
+	mls.process(mls_points);
+	mls_cloud->resize(mls_points.size());
+
+	for (size_t i = 0; i < mls_points.points.size(); ++i)
+	{
+		mls_cloud->points[i].x = mls_points.points[i].x; //error 
+		mls_cloud->points[i].y = mls_points.points[i].y; //error 
+		mls_cloud->points[i].z = mls_points.points[i].z; //error 
+	}
+	cout << "after rebuile, cloud size = " << mls_cloud->size() << endl;
+	source_cloud = mls_cloud;
+	viewer_cloud.removeAllPointClouds();
+	viewer_cloud.addPointCloud(source_cloud, "source");
+	cout << "done" << endl;
+	ui->qvtkWidget->update();
+	viewer_cloud.spinOnce();
+
+	//pcl::copyPointCloud(*mls_points,*source_cloud)
 }
 
 
@@ -273,7 +419,7 @@ void MainWindow::on_repairHolesOFFAction_triggered() {
 //旋转原点云
 //输入数据：source_cloud_registration
 //输出数据：cloud_tr
-void MainWindow::on_rotatePointCloudAction_triggered() {
+void MainWindow::on_rotatePointCloudAction_triggered() { 
 	//变量转换器
 	verb_transform(cloud_result, source_cloud_registration);
 
