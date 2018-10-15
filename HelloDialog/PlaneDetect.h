@@ -1711,6 +1711,7 @@ void growPlaneArea()
 // 平面合并
 void mergePlanes()
 {
+	/*
 	// 构造关系图
 	std::vector<std::vector<int>> E;
 	for(int i = 0; i < plane_clouds.size(); ++i)
@@ -1802,6 +1803,8 @@ void mergePlanes()
 	cout << "final plane number = " << plane_clouds_final.size() << endl;
 
 	delete []isNodeProcessed;
+	*/
+	plane_clouds_final = plane_clouds;
 }
 // 获取两个平面公共点的数量
 int getCommonPointsNumber(PointCloudT::Ptr &cloud1, PointCloudT::Ptr &cloud2)
@@ -1975,6 +1978,7 @@ void projPoint2Plane( pcl::PointXYZ &source_point, pcl::PointXYZ &dest_point, Ei
 int plane_start_index = 0;
 void postProcessPlanes()
 {
+	/*
 	// 清理数据
 	isFirstUseRegulateNormal = true;	// 估计法向量时使用
 	sinkPointsSet.clear();
@@ -2085,7 +2089,7 @@ void postProcessPlanes()
 			source_cloud->push_back(cloud->points[i]);
 		}
 	}
-
+	*/
 	// just for testing:
 	/*Plane plane_ = plane_clouds_final[0];
 	plane_clouds_final.clear();
@@ -2100,6 +2104,7 @@ void postProcessPlanes()
 		}
 	}*/
 	///////////////////////////////////////////////////////////////////////////
+	/*
 	// 对剩下的点云进行聚类，每个聚类的数目不得少于一个阈值
 	clusterFilt();
 
@@ -2111,6 +2116,8 @@ void postProcessPlanes()
 	isProcessed = NULL;
 	
 	isFirstRun = false;					// 是第一遍跑这个procedure吗？
+
+	*/
 }
 // 对源点云进行聚类分割，并舍弃元素数量较少的聚类
 void clusterFilt()
