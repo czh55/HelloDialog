@@ -39,6 +39,8 @@ public:
 private slots:
     void on_openFileAction_triggered();
 
+	void on_openTxtAction_triggered();
+
 	void on_openFile1RegistrationAction_triggered();
 	
 	void on_openFile2RegistrationAction_triggered();
@@ -59,8 +61,6 @@ private slots:
 
 	void on_TriangularMeshingAction_triggered();
 
-	void on_repairHolesAction_triggered();
-
     void on_bgColorMenu_triggered();
 	
 	void on_cleanPointCloudAction_triggered();
@@ -68,6 +68,12 @@ private slots:
 	void on_removeNan1Action_triggered();
 
 	void on_voxelGridFilt1Action_triggered();
+
+	void on_statisticalOutlierRemovalFiltAction_triggered();
+
+	void on_setNumberforpointAction_triggered();
+
+	void on_rebuildPlaneAction_triggered();
 
     void on_pointCloudColorMenu_triggered();
 

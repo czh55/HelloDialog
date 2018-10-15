@@ -38,35 +38,65 @@ void PlaneDetectSetParamDialog::initTable()
 
     configIniRead = new QSettings("config.txt", QSettings::IniFormat);
     // 设置表项
-    setTableItem(0, "isConductTranslate", "是否对点云执行平移操作");
-    setTableItem(1, "min_dist_between_points", "去除同一个位置的冗余点时使用，也就是两点之间的最小距离");
-    setTableItem(2, "r_for_estimate_normal", "计算法向量的搜索半径");
-    setTableItem(3, "interval_level", "点云法向量的显示间隔");
-    setTableItem(4, "normal_length_for_display", "点云法向量的显示长度");
-    setTableItem(5, "normal_length_for_selected", "选中点的法向量的长度");
-    setTableItem(6, "is_norm_direction_valid", "法向量是否指向物体外部");
-    setTableItem(7, "r_for_regulate_normal", "校正法向量方向的搜索半径");
-    setTableItem(8, "num_res", "参数空间数值分辨率");
-    setTableItem(9, "color_gain", "可视化投票情况的颜色增益");
-    setTableItem(10, "std_dev_gaussian", "高斯核函数的标准差");
-    setTableItem(11, "search_radius_create_gradient", "创建梯度场时的邻域搜索半径");
-    setTableItem(12, "T_vote_num", "向sink点进行投票的最小数量阈值");
-    setTableItem(13, "radius_base", "梯度场sink点校正时初始的搜索半径");
-    setTableItem(14, "delta_radius", "radius_base的增量");
-    setTableItem(15, "S_threshold", "有效单元占比的阈值");
-    setTableItem(16, "dev_threshold", "校正梯度场时的角度偏离阈值(角度）");
-    setTableItem(17, "search_radius_for_plane_seg", "进行平面分割时搜索半径");
-    setTableItem(18, "T_num_of_single_plane", "单个平面点数量阈值");
-    setTableItem(19, "radius_border", "实现平面区域扩充时，寻找边界的半径");
-    setTableItem(20, "radius_local", "实现平面区域扩充时，寻找局部平面的半径");
-    setTableItem(21, "T_angle_bias_integrate", "更新后平面的角度偏离阈值(相对于种子平面)（角度）");
-    setTableItem(22, "r_local", "进行平面增长时计算点的法向量时选取的一个较小的搜索半径");
-    setTableItem(23, "T_curvature_bias", "曲率偏移阈值");
-    setTableItem(24, "T_point_normal_bias", "平面边缘点的法向量与平面法向量的偏离阈值");
-    setTableItem(25, "T_ratio_merge_planes", "进行平面合并时公共部分的最小比例");
-    setTableItem(26, "alpha_poly", "构造平面凹包时alpha大小");
-    setTableItem(27, "T_dist_point_plane", "点与平面的距离阈值");
-    setTableItem(28, "T_cluster_num", "每个聚类的最小数量阈值");
+	QString information0 = information0.fromLocal8Bit("是否对点云执行平移操作");
+	QString information1 = information1.fromLocal8Bit("去除同一个位置的冗余点时使用，也就是两点之间的最小距离");
+	QString information2 = information2.fromLocal8Bit("计算法向量的搜索半径");
+	QString information3 = information3.fromLocal8Bit("点云法向量的显示间隔");
+	QString information4 = information4.fromLocal8Bit("点云法向量的显示长度");
+	QString information5 = information5.fromLocal8Bit("选中点的法向量的长度");
+	QString information6 = information6.fromLocal8Bit("法向量是否指向物体外部");
+	QString information7 = information7.fromLocal8Bit("校正法向量方向的搜索半径");
+	QString information8 = information8.fromLocal8Bit("参数空间数值分辨率");
+	QString information9 = information9.fromLocal8Bit("可视化投票情况的颜色增益");
+	QString information10 = information10.fromLocal8Bit("高斯核函数的标准差");
+	QString information11 = information11.fromLocal8Bit("创建梯度场时的邻域搜索半径");
+	QString information12 = information12.fromLocal8Bit("向sink点进行投票的最小数量阈值");
+	QString information13 = information13.fromLocal8Bit("梯度场sink点校正时初始的搜索半径");
+	QString information14 = information14.fromLocal8Bit("radius_base的增量");
+	QString information15 = information15.fromLocal8Bit("有效单元占比的阈值");
+	QString information16 = information16.fromLocal8Bit("校正梯度场时的角度偏离阈值(角度）");
+	QString information17 = information17.fromLocal8Bit("进行平面分割时搜索半径");
+	QString information18 = information18.fromLocal8Bit("单个平面点数量阈值");
+	QString information19 = information19.fromLocal8Bit("实现平面区域扩充时，寻找边界的半径");
+	QString information20 = information20.fromLocal8Bit("实现平面区域扩充时，寻找局部平面的半径");
+	QString information21 = information21.fromLocal8Bit("更新后平面的角度偏离阈值(相对于种子平面)（角度）");
+	QString information22 = information22.fromLocal8Bit("进行平面增长时计算点的法向量时选取的一个较小的搜索半径");
+	QString information23 = information23.fromLocal8Bit("曲率偏移阈值");
+	QString information24 = information24.fromLocal8Bit("平面边缘点的法向量与平面法向量的偏离阈值");
+	QString information25 = information25.fromLocal8Bit("进行平面合并时公共部分的最小比例");
+	QString information26 = information26.fromLocal8Bit("构造平面凹包时alpha大小");
+	QString information27 = information27.fromLocal8Bit("点与平面的距离阈值");
+	QString information28 = information28.fromLocal8Bit("每个聚类的最小数量阈值");
+
+	setTableItem(0, "isConductTranslate", information0);
+	setTableItem(1, "min_dist_between_points", information1);
+	setTableItem(2, "r_for_estimate_normal", information2);
+	setTableItem(3, "interval_level", information3);
+	setTableItem(4, "normal_length_for_display", information4);
+	setTableItem(5, "normal_length_for_selected", information5);
+	setTableItem(6, "is_norm_direction_valid", information6);
+	setTableItem(7, "r_for_regulate_normal", information7);
+	setTableItem(8, "num_res", information8);
+	setTableItem(9, "color_gain", information9);
+	setTableItem(10, "std_dev_gaussian", information10);
+	setTableItem(11, "search_radius_create_gradient", information11);
+	setTableItem(12, "T_vote_num", information12);
+	setTableItem(13, "radius_base", information13);
+	setTableItem(14, "delta_radius", information14);
+	setTableItem(15, "S_threshold", information15);
+	setTableItem(16, "dev_threshold", information16);
+	setTableItem(17, "search_radius_for_plane_seg", information17);
+	setTableItem(18, "T_num_of_single_plane", information18);
+	setTableItem(19, "radius_border", information19);
+	setTableItem(20, "radius_local", information20);
+	setTableItem(21, "T_angle_bias_integrate", information21);
+	setTableItem(22, "r_local", information22);
+	setTableItem(23, "T_curvature_bias", information23);
+	setTableItem(24, "T_point_normal_bias", information24);
+	setTableItem(25, "T_ratio_merge_planes", information25);
+	setTableItem(26, "alpha_poly", information26);
+	setTableItem(27, "T_dist_point_plane", information27);
+	setTableItem(28, "T_cluster_num", information28);
 }
 
 void PlaneDetectSetParamDialog::setTableItem(int row, QString str1, QString str2)
@@ -120,7 +150,9 @@ void PlaneDetectSetParamDialog::on_buttonBox_accepted()
         configIniRead->setValue(key, value);
     }
 
-    QMessageBox::about(NULL, "提示", "参数已设置好");
+	QString title = title.fromLocal8Bit("提示");
+	QString information = information.fromLocal8Bit("参数已设置好");
+	QMessageBox::about(NULL, title, information);
 }
 
 

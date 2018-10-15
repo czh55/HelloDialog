@@ -77,6 +77,13 @@ struct Plane
 	pcl::ModelCoefficients coeff;					// 平面参数，法向量指向物体外部
 	std::vector<Triangle, Eigen::aligned_allocator<Triangle>> triangles;	// 多边形的三角形面片
 };
+typedef struct tagPOINT_3D
+{
+	double x;  //mm world coordinate x  
+	double y;  //mm world coordinate y  
+	double z;  //mm world coordinate z  
+	double r;
+}POINT_WORLD;
 
 // 最终的平面集合
 std::vector<Plane, Eigen::aligned_allocator<Plane>> plane_clouds_final;
